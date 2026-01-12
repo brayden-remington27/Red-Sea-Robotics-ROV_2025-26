@@ -1,0 +1,55 @@
+#####################################################################################################################################################
+This is more or less a duplication of Dylan's code, trying to use as much from him as possible, however some of it I don't understand, 
+and can't figure out how in the world to debug. This file is for me to conceptualize how his code works and how I can put it in a way for me and any
+successors to understand.
+#####################################################################################################################################################
+
+
+#=============#
+#  Base Info  #
+#=============#
+
+    +—————————————+
+    |File Purposes|
+    +—————————————+
+
+        sett.ini: 
+        An initialization file containting the most readily and changable of variables; pin numbers for motors, refresh/update speeds, motor 
+        configurations and such. -> equivilant to Dylan's config.ini (settings just made more sense to me, even if people usually use config as a 
+        name)
+
+        start.py: 
+        The initial start script. The goal is that running this script can singlehandedly get everything else up and running, no software hastle 
+        after development is complete. No sh files, no other fiddling with the raspi — so long as the raspi can recieve gpiozero/pigpio commands, 
+        and transmit the camera, nothing more is needed. -> equivilant to Dylan's main_host.py, hopefully with more functionality dealing with 
+        startup.
+
+        control.py:
+        The main control loop and such of the code. It deals with calling other files, dealing with the highest level commands to the ROV, utilizing 
+        settings as initialized in sett and start. -> equivilant to Dylan's controller.py
+
+        draw.py:
+        This script creates the digital interface on the computer. Shows data about motor activation, controller status (modes, etc), and most 
+        likely camera data, possibly the sterioscopic 3D modeling camera too. -> equivilant to about half of the control script in Dylan's code 
+        (controller.py)
+            I may include some utils.py code from Dylan's into this, like the TextPrint, or I might keep utils as a seperate file, unsure.
+
+        inputs.py:
+        This script manages inputs from the controller and possibly keyboard, if needed. It recieves -> equivilant to Dylan's joystick_manager.py, 
+        xbox.py, and balanced.py/lift.py, capible of recieving the joystick inputs, and turning them into thruster activation values
+
+        sensors.py:
+        Deals with the sensors on the ROV: IMU (I think this is the MPU 6050), leak detection, thermometer (tsys01 I think), and pressure/depth.
+        -> equivilant with mpu6050_client.py (is the mpu6050_server.py running on the raspi?), tsys01.py, mpu6050.py, and prob a function for 
+        balancing the ROV that can be implemented in the control.py script along with the joystick movements, or on a seperate thread
+
+        camera.py:
+        Recieves input from the main camera, makes functions the servo controls for it for the controller script to use in conjunction with the 
+        joystick. Possibly some additional functions for taking pictures/recording, or computer vision related things. -> equivilant to Dylan's 
+        camera.py and camera_client.sh
+
+        sterioscope.py:
+        Recieves data from the sterioscopic camera onboard, displays it, processes it with opencv or some driver if Erica can figure that out, 
+        and displays/stores the 3D model collected. In order to collect an additional camera data feed, I will need to figure out another way
+        to transmit the normal camera feed; right now the camera needs to replace the webcam feed of the laptop to transmit, there needs to be 
+        a better way of getting the data to the computer.

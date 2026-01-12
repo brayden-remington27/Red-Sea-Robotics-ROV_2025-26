@@ -1,5 +1,0 @@
-#####################################################################################################################################################
-This is more or less a duplication of Dylan's code, trying to use as much from him as possible, however some of it I don't understand, 
-and can't figure out how in the world to debug. This file is for me to conceptualize how his code works and how I can put it in a way for me and any
-successors to understand.
-#####################################################################################################################################################
