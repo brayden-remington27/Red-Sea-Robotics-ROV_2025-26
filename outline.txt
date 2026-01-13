@@ -53,3 +53,6 @@ successors to understand.
         and displays/stores the 3D model collected. In order to collect an additional camera data feed, I will need to figure out another way
         to transmit the normal camera feed; right now the camera needs to replace the webcam feed of the laptop to transmit, there needs to be 
         a better way of getting the data to the computer.
+
+        arm.py:
+        Controls the robotic arm on the ROV.
