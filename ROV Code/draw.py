@@ -1,4 +1,5 @@
 import pygame
+import math  # for rounding
 
 # Start Pygame and create info window
 def init(WD, HT, BGC, resize=True):
@@ -66,10 +67,10 @@ def update(data: dict, cameraDisplay: pygame.Surface):
     printer.print(window, "")
     
     printer.tprint(window, "CONTROLLER | MOTORS")  # Controller joystick activations and toggles
-    printer.print(window, f"   LX: {0.0}  | R:  {0.0}")
-    printer.print(window, f"   LY: {0.0}  | L:  {0.0}")
-    printer.print(window, f"   RX: {0.0}  | NW: {0.0}")
-    printer.print(window, f"   RX: {0.0}  | NE: {0.0}")
+    printer.print(window, f"  LX: {round(data["joystickValues"]["sticks"]["lx"], 2)}  | R:  {0.0}")  # round the display values to 2 decimal points
+    printer.print(window, f"  LY: {round(data["joystickValues"]["sticks"]["ly"], 2)}  | L:  {0.0}")
+    printer.print(window, f"  RX: {round(data["joystickValues"]["sticks"]["rx"], 2)}  | NW: {0.0}")
+    printer.print(window, f"  RY: {round(data["joystickValues"]["sticks"]["ry"], 2)}  | NE: {0.0}")
     printer.print(window, f"            | SW: {0.0}")
     printer.print(window, f"            | SE: {0.0}")
     printer.outdent()
@@ -107,21 +108,6 @@ def quit():
 # TODO: move to inputs.py script with keyboard inputs (not controller inputs)
 # Gets pygame inputs and places booleans into a list
 # Primarily used for checking if pygame has quit
-def getComputerInputs() -> list:
-    inputs = [False, False]
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            inputs[0] = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                inputs[1] = True
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_RETURN:
-                inputs[1] = False
-    
-    return inputs
-
-
 
 
 

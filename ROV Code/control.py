@@ -63,14 +63,18 @@ def loop():
         ins = inputs.values
         activations = sticks_to_activations(ins)
         
-        inputData = {
+        
+        values = inputs.getInputs()[2]  # 2: controller inputs
+        displayData = {
             # TODO: replace inputs.values with ins
             "status": sensors.flags,  # Flags of what is connected (cam, gyro, therm) and errors/warnings (leaks, etc)
             "data": sensors.data,  # temp, gyro, accel
-            "settings": inputs.values["toggles"], # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
+            "settings": {
+                values["buttons"], # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
+            },
             "joystickValues": {
-                "sticks": inputs.values["thumbsticks"],  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, not just making the joystick cap not change anything after a certain point)
-                "dpad": inputs.values["dpad"]
+                "sticks": values["thumbsticks"],  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, not just making the joystick cap not change anything after a certain point)
+                "dpad": values["hat"]
             }
         }
         
@@ -88,11 +92,14 @@ def loop():
         
         #camera.camera1Display = camera.CV2FrameAsSurface(camera.camera1Display.get_width(), camera.camera1Display.get_height())
         #already in camera.asSurface(1)
-        draw.update(inputData, camera.asSurface(0))  # Redraw all the text and data
+        draw.update(displayData, camera.asSurface(0))  # Redraw all the text and data
+        if inputs.getInputs()[1]: pygame.display.toggle_fullscreen()  # Fullscreen if enter is pressed
         
-        if draw.getComputerInputs()[1]: pygame.display.toggle_fullscreen()
         
-        if draw.getComputerInputs()[0]: print("Quitting"); running = False # Quit if window closed
+        
+        ###### FINAL CHECKS ######
+        if inputs.getInputs()[0]: print("Quitting"); running = False # Quit if window closed
+    
     draw.quit()
     camera.quit()
 
