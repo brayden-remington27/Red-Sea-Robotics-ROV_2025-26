@@ -69,9 +69,7 @@ def loop():
             # TODO: replace inputs.values with ins
             "status": sensors.flags,  # Flags of what is connected (cam, gyro, therm) and errors/warnings (leaks, etc)
             "data": sensors.data,  # temp, gyro, accel
-            "settings": {
-                values["buttons"], # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
-            },
+            "settings": values["buttons"], # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
             "joystickValues": {
                 "sticks": values["thumbsticks"],  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, not just making the joystick cap not change anything after a certain point)
                 "dpad": values["hat"]

@@ -18,8 +18,8 @@ def init():
     global cameraDisplays
     
 def quit():
-    for i in cameraCaptures:
-        i.release()
+    # for i in range(len(cameraCaptures)):
+    #     cameraCaptures[i].release()
     cameraCaptures = []
     cv2.destroyAllWindows()
     
