@@ -6,22 +6,33 @@ import pygame
 import cv2
 from datetime import datetime
 
-def screenInit(width, height):
-    global camera1Display
-    camera1Display = pygame.Surface((width, height))  # this should be more or less the only usage of a display entity here, to make it exist.
+cameraCaptures: list = []
+cameraDisplays: list = []
+stopRecord: bool = False
+
+def init():
+    print("Initializing cameras")
+    global stopRecord
     
-    # TODO: implement a second camera display for the arm/backup camera
-    global camera2Display
-    #camera1Display = pygame.Surface((width, height))  # I need different width/heights
+    global cameraCaptures
+    global cameraDisplays
+    
+def quit():
+    for i in cameraCaptures:
+        i.release()
+    cameraCaptures = []
+    cv2.destroyAllWindows()
     
     
-    global cap
-    cap = cv2.VideoCapture(0)
     
-    
-# TODO: fix this ai cv2 recording code to work within my program
-def startRecord():
-    cap = cv2.VideoCapture(0)
+def addCamera(cv2CameraN: int, width: int, height: int):
+    print("Adding new camera")
+    cameraCaptures.append(cv2.VideoCapture(cv2CameraN))
+    cameraDisplays.append(pygame.Surface((width, height)))
+
+# TODO: fix this ai cv2 recording code to work within my program. currently it would halt it, maybe threads or add a writeFrame function to work in the larger loop
+def record(cameraN: int):
+    cap = cameraCaptures[cameraN]  # get which camera to record.
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 
@@ -30,8 +41,9 @@ def startRecord():
     fps = 30 # Set the desired frames per second
 
     # Set the name to the timestamp (-milliseconds)
+    
     now = datetime.now()
-    out = cv2.VideoWriter(f'ROV Code/records/{now.year}-{now.month}-{now.day}:{now.hour}.{now.minute}.{now.second}.mp4', 
+    out = cv2.VideoWriter(f'ROV Code/records/cam({cameraN}){now.year}-{now.month}-{now.day}:{now.hour}.{now.minute}.{now.second}.mp4', 
                           fourcc, fps, (frame_width, frame_height))
 
     while cap.isOpened():
@@ -47,23 +59,19 @@ def startRecord():
         if cv2.waitKey(1) == ord('q'): # Press 'q' to quit
             break
 
-    cap.release()
+    #cap.release()
     out.release()
     cv2.destroyAllWindows()
 
-def stopRecord():
-    pass
-
-
-def CV2FrameAsSurface(width, height):
-    ret, frame = cap.read()
+def CV2FrameAsSurface(cameraN: int, width: int, height: int):  # width & height for scaling
+    ret, frame = cameraCaptures[cameraN].read()
     frame = cv2.resize(frame, (width, height))
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     frame_rgb = cv2.rotate(frame_rgb, cv2.ROTATE_90_CLOCKWISE)
-    frame_rgb = cv2.flip(frame_rgb, 1)
+    frame_rgb = cv2.flip(frame_rgb, -1)
     
     return pygame.surfarray.make_surface(frame_rgb)
 
-def quit():
-    stopRecord()
-    cap.release()
+def asSurface(cameraN: int): # basically a child of CV2FrameAsSurface
+    return CV2FrameAsSurface(cameraN, cameraDisplays[cameraN].get_width(), cameraDisplays[cameraN].get_height())
+

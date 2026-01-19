@@ -6,36 +6,21 @@
 
 import pygame
 
-values = {}
-toggles = {}
-
-XBOXRefrence = {
-    "DEADZONE": 0.075,
-    
-    "BUTTONS": {
-        "r_a": 0,
-        "r_b": 1,
-        "r_x": 2,
-        "r_y": 3,
-        "ljoy": 9,
-        "rjoy": 10,
-        #"lt": 6,
-        #"rt": 7,
-        "lb": 4,
-        "rb": 5,
-        "back": 6,
-        "start": 8
+values = {
+    "thumbsticks": {
+        "lx": 0.0,
+        "ly": 0.0,
+        "rx": 0.0,
+        "ry": 0.0
     },
-
-    "AXES": {
-        "l_x": 0,
-        "l_y": 1,
-        "r_x": 3,
-        "r_y": 4,
+    "dpad": {
+        "UP": 0,
+        "RIGHT": 0,
+        "LEFT": 0,
+        "DOWN": 0,
     },
-
-    "HATS":{
-        "main": 0
+    "toggles": {
+        "mode": "Stabilized"
     }
 }
 
@@ -67,4 +52,5 @@ def init(usingController: bool=True):
 def get_status():
     pass
 
-def 
+def keyboard_to_controller_activations(keypresses: dict):
+    pass

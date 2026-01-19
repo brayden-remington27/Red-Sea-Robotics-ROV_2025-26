@@ -18,7 +18,7 @@ def init(WD, HT, BGC, resize=True):
     BACKGROUND_COLOR = BGC
     
     window = pygame.display.set_mode((WD, HT), pygame.RESIZABLE if resize else 0)  # Create the window/surface that is drawn to
-    printer = TextPrint(45, 36)  # create a printer that writes text to the window surface
+    printer = TextPrint(45, 30)  # create a printer that writes text to the window surface
 
 
 
@@ -43,28 +43,48 @@ def update(data: dict, cameraDisplay: pygame.Surface):
     printer.errprint(window, "Gyro Disconnected")
     printer.errprint(window, "Thermo Disconnected")
     printer.outdent()
-    printer.outdent()
     printer.errprint(window, "Controller Disconnected", "yellow")
+    printer.outdent()
+    printer.print(window, "")
     printer.print(window, "")
     
-    printer.tprint(window, "DATA:")  # temp/pressure/depth
+    printer.tprint(window, "DATA:")  # temp/pressure/depth. mostlly gotten from control.py's displayData
+    printer.indent()
+    printer.print(window, f"Temp (in): {data["data"]["intTemp"]}")
+    printer.print(window, f"Temp (ex): {data["data"]["extTemp"]}")
+    printer.print(window, f"Pressure: {data["data"]["pressure"]}")
+    printer.print(window, f"Depth: {data["data"]["depth"]}")
+    printer.outdent()
+    printer.print(window, "")
     printer.print(window, "")
     
     printer.tprint(window, "SETTINGS:")  # Controller settings: movement mode (stabilized, stationary, free, cancel rot), 
+    printer.indent()
+    printer.print(window, f"Movement Activaion Modifier: {data["settings"]["mode"]}")  # data["settings"] is the same as displayData["settings"], which gets data from input.values["toggles"]
+    printer.outdent()
+    printer.print(window, "")
     printer.print(window, "")
     
-    printer.tprint(window, "CONTROLLER:")  # Controller joystick activations and toggles
+    printer.tprint(window, "CONTROLLER | MOTORS")  # Controller joystick activations and toggles
+    printer.print(window, f"   LX: {0.0}  | R:  {0.0}")
+    printer.print(window, f"   LY: {0.0}  | L:  {0.0}")
+    printer.print(window, f"   RX: {0.0}  | NW: {0.0}")
+    printer.print(window, f"   RX: {0.0}  | NE: {0.0}")
+    printer.print(window, f"            | SW: {0.0}")
+    printer.print(window, f"            | SE: {0.0}")
+    printer.outdent()
+    printer.print(window, "")
     printer.print(window, "")
     
     
     
     # Print Camera Text
     printer.reset()
-    printer.x = 755
+    printer.x = 875
     printer.tprint(window, "CAMERA:")
     
     # Bring camera1Display from the camera.py to control.py update, and fed to draw.py as cameraDisplay
-    window.blit(cameraDisplay, (400, 65))
+    window.blit(cameraDisplay, (500, 65))
     
     pygame.display.flip()
 
@@ -88,10 +108,16 @@ def quit():
 # Gets pygame inputs and places booleans into a list
 # Primarily used for checking if pygame has quit
 def getComputerInputs() -> list:
-    inputs = [0]
+    inputs = [False, False]
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             inputs[0] = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                inputs[1] = True
+        elif event.type == pygame.KEYUP:
+            if event.key == pygame.K_RETURN:
+                inputs[1] = False
     
     return inputs
 
@@ -117,18 +143,18 @@ class TextPrint(object):                                                       #
         self.size = size                                                       #
         self.tsize = tsize                                                     #
         self.reset()                                                           #
-        self.font = pygame.font.Font(None, self.size)                          #
+        self.font = pygame.font.Font("ROV Code/textures/Space Mono/SpaceMono-Bold.ttf", self.size)
         self.tfont = pygame.font.Font(None, self.tsize)                        #
                                                                                #
-    def tprint(self, screen, textString, color="white"):                      #
+    def tprint(self, screen, textString, color="white"):                       #
         textBitmap = self.tfont.render(textString, True, pygame.Color(color))  #
         screen.blit(textBitmap, (self.x, self.y))                              #
-        self.y += self.line_height+0.5*self.line_height
+        self.y += self.title_height
         
     def errprint(self, screen, textString, color="orange"):
-        textBitmap = self.font.render(textString, True, pygame.Color(color))  #
+        textBitmap = self.font.render(textString, True, pygame.Color(color))   #
         screen.blit(textBitmap, (self.x, self.y))                              #
-        self.y += self.line_height+0.5*self.line_height
+        self.y += self.line_height
                                                                                #
     def print(self, screen, textString, color="grey"):                         #
         textBitmap = self.font.render(textString, True, pygame.Color(color))   #
@@ -137,8 +163,9 @@ class TextPrint(object):                                                       #
                                                                                #
     def reset(self):                                                           #
         self.x = 20                                                            #
-        self.y = 20                                                            #
-        self.line_height = self.size * 3/4                                     #
+        self.y = 20
+        self.title_height = self.size*1.2                                      #
+        self.line_height = self.size                                           #
                                                                                #
     def indent(self):                                                          #
         self.x += 20                                                           #

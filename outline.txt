@@ -38,6 +38,9 @@ successors to understand.
         This script manages inputs from the controller and possibly keyboard, if needed. It recieves -> equivilant to Dylan's joystick_manager.py, 
         xbox.py, and balanced.py/lift.py, capible of recieving the joystick inputs, and turning them into thruster activation values
 
+        outputs.py:
+        In control of the thrusters and arm, with some useful methods for the control loop to call
+
         sensors.py:
         Deals with the sensors on the ROV: IMU (I think this is the MPU 6050), leak detection, thermometer (tsys01 I think), and pressure/depth.
         -> equivilant with mpu6050_client.py (is the mpu6050_server.py running on the raspi?), tsys01.py, mpu6050.py, and prob a function for 
@@ -53,6 +56,3 @@ successors to understand.
         and displays/stores the 3D model collected. In order to collect an additional camera data feed, I will need to figure out another way
         to transmit the normal camera feed; right now the camera needs to replace the webcam feed of the laptop to transmit, there needs to be 
         a better way of getting the data to the computer.
-
-        arm.py:
-        Controls the robotic arm on the ROV.

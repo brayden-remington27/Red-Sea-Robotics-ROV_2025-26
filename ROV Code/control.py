@@ -9,31 +9,23 @@ import configparser
 
 import draw
 import inputs
+import outputs
 import camera
 import sterioscope
 import sensors
 
-
+ins = {}  # a dictionary containing all of the activations from the inputs
+motors = {}  # a dictionary containing all of the activations for the motors
+camRecording = False  # to see if the cameras are recording
 
 def init(config):
     
+    global ins
+    global motors
+    global camRecording
+    
     #################   VALUES EXTRACTED FROM SETTINGS FILE   ###############################
-    PINS = {
-        "FRONT_LEFT_PIN": config.getint("THRUSTERS", "FRONT_LEFT_PIN", fallback=19),
-        "FRONT_RIGHT_PIN": config.getint("THRUSTERS", "FRONT_RIGHT_PIN", fallback=16),
-        "UP_BACKLEFT_PIN": config.getint("THRUSTERS", "UP_BACKLEFT_PIN", fallback=21),
-        "UP_BACKRIGHT_PIN": config.getint("THRUSTERS", "UP_BACKRIGHT_PIN", fallback=20),
-        "UP_FRONTLEFT_PIN": config.getint("THRUSTERS", "UP_FRONTLEFT_PIN", fallback=26),
-        "UP_FRONTRIGHT_PIN": config.getint("THRUSTERS", "UP_FRONTRIGHT_PIN", fallback=6),
-
-        "ARM_PIN": config.getint("GENERAL", "ARM_PIN", fallback=13),
-        "CAMERA_PIN": config.getint("GENERAL", "CAMERA_PIN", fallback=25),
-        "LEAK_PIN": config.getint("GENERAL", "LEAK_PIN", fallback=5)
-    }
-
-    MAX_PW = config.getfloat("PWM", "MAX_PW", fallback=0.0019)
-    MIN_PW = config.getfloat("PWM", "MIN_PW", fallback=0.0011)
-
+    
     HOST_NAME = config.get("NETWORKING", "HOST_NAME", fallback="192.168.2.1")
     CLIENT_NAME = config.get("NETWORKING", "CLIENT_NAME", fallback="redsearobotics")
 
@@ -49,11 +41,12 @@ def init(config):
     ########################################################################################
     
     
-    camera.screenInit(CAM1WIDTH, CAM1HEIGHT)
+    camera.init()
+    camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)
+    # TODO: implement more cameras for the arm/main/backup cameras
+    
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
-
-
-
+    outputs.init(config)
 
 
 
@@ -65,24 +58,43 @@ def loop():
     running = True
     while running:  # Start control loop
         
-        ###### JOYSTICK TO MOTORS ######
+        ###### EXTRACT INPUTS ######
         
+        ins = inputs.values
+        activations = sticks_to_activations(ins)
         
-        
-        displayData = {
+        inputData = {
+            # TODO: replace inputs.values with ins
             "status": sensors.flags,  # Flags of what is connected (cam, gyro, therm) and errors/warnings (leaks, etc)
             "data": sensors.data,  # temp, gyro, accel
-            "settings": inputs.toggles,  # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
-            "joystickValues": inputs.values  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, 
-            #not just making the joystick cap not change anything after a certain point)
+            "settings": inputs.values["toggles"], # PWM settings from controller to motors, different modes of movement, recording stats, controling mode (contr or keyb). buttons on contr
+            "joystickValues": {
+                "sticks": inputs.values["thumbsticks"],  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, not just making the joystick cap not change anything after a certain point)
+                "dpad": inputs.values["dpad"]
+            }
         }
         
+        ###### OUTPUTS ######
+        
+        outputs.updateActivations(activations)
+        
+        ###### CAMERA ######
+        
+        
+        
         ###### DRAW ######
-        # Draw the webcam onto the screen for now, making sure to scale the camera input to the desired size of the surface
-        camera.camera1Display = camera.CV2FrameAsSurface(camera.camera1Display.get_width(), camera.camera1Display.get_height())
         
-        draw.update(displayData, camera.camera1Display)
+        # Draw the WEBCAM onto the screen for now, making sure to scale the camera input to the desired size of the surface
         
-        if draw.getComputerInputs()[0]:  running = False # Quit if window closed
+        #camera.camera1Display = camera.CV2FrameAsSurface(camera.camera1Display.get_width(), camera.camera1Display.get_height())
+        #already in camera.asSurface(1)
+        draw.update(inputData, camera.asSurface(0))  # Redraw all the text and data
+        
+        if draw.getComputerInputs()[1]: pygame.display.toggle_fullscreen()
+        
+        if draw.getComputerInputs()[0]: print("Quitting"); running = False # Quit if window closed
     draw.quit()
     camera.quit()
+
+def sticks_to_activations(axes: dict):
+    pass
