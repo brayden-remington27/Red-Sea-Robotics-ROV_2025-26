@@ -30,7 +30,7 @@ def init(usingController: bool=True):
         
         global controller
         global inputs
-        global toggles
+        #global toggles
         global toggleMode
         
         # Check for and initialize controllers
@@ -76,7 +76,9 @@ def getInputs() -> list:
             if event.axis == 4:
                 inputs[2]["thumbsticks"]["ry"] = event.value
                 #print(event.value)
-                
+            
+        if event.type == pygame.JOYHATMOTION:
+            inputs[2]["hat"] = event.value
             
     
     return inputs
