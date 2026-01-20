@@ -67,10 +67,11 @@ def update(data: dict, cameraDisplay: pygame.Surface):
     printer.print(window, "")
     
     printer.tprint(window, "CONTROLLER | MOTORS")  # Controller joystick activations and toggles
-    printer.print(window, f"  LX: {round(data["joystickValues"]["sticks"]["lx"], 2)}  | R:  {0.0}")  # round the display values to 2 decimal points
-    printer.print(window, f"  LY: {round(data["joystickValues"]["sticks"]["ly"], 2)}  | L:  {0.0}")
-    printer.print(window, f"  RX: {round(data["joystickValues"]["sticks"]["rx"], 2)}  | NW: {0.0}")
-    printer.print(window, f"  RY: {round(data["joystickValues"]["sticks"]["ry"], 2)}  | NE: {0.0}")
+    print(round(data["joystickValues"]["sticks"]["lx"], 2))
+    printer.print(window, f" LX: {round(data["joystickValues"]["sticks"]["lx"], 2): .2f}  | R:  {0.0}")  # round the display values to 2 decimal points
+    printer.print(window, f" LY: {round(data["joystickValues"]["sticks"]["ly"], 2): .2f}  | L:  {0.0}")  # with the ": .2f", it turns the - to a space with the " ", and ensures 2 decimal points with ".2f"
+    printer.print(window, f" RX: {round(data["joystickValues"]["sticks"]["rx"], 2): .2f}  | NW: {0.0}")
+    printer.print(window, f" RY: {round(data["joystickValues"]["sticks"]["ry"], 2): .2f}  | NE: {0.0}")
     printer.print(window, f"            | SW: {0.0}")
     printer.print(window, f"            | SE: {0.0}")
     printer.outdent()
