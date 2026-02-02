@@ -1,49 +1,35 @@
 import pigpio
 import time
 
-RASPI_HOST = "10.42.0.91"
-MOTOR_PIN = 26
+PI_IP = "10.42.0.91"
+GPIO = 26
 
-# Pulse widths in microseconds
-MIN_PW = 1100
-MAX_PW = 1900
+MIN_PW = 1100   # off / minimum
+MAX_PW = 1900   # max
 
-def set_speed(pi, percent):
-    """
-    percent: 0.0 to 1.0
-    """
-    if percent <= 0:
-        pi.set_servo_pulsewidth(MOTOR_PIN, 0)
-        return
+pi = pigpio.pi(PI_IP)
+assert pi.connected, "pigpio not connected"
 
-    pulse = MIN_PW + percent * (MAX_PW - MIN_PW)
-    pi.set_servo_pulsewidth(MOTOR_PIN, pulse)
-
-pi = pigpio.pi(RASPI_HOST)
-
-if not pi.connected:
-    raise RuntimeError("Failed to connect to Raspberry Pi")
-
-pi.set_mode(MOTOR_PIN, pigpio.OUTPUT)
-
-# OFF
-set_speed(pi, 0.0)
-time.sleep(5)
-
-# 20%
-set_speed(pi, 0.20)
+print("OFF")
+pi.set_servo_pulsewidth(GPIO, MIN_PW)
 time.sleep(1)
 
-# 80%
-set_speed(pi, 0.80)
+print("20%")
+pw_20 = MIN_PW + 0.2 * (MAX_PW - MIN_PW)
+pi.set_servo_pulsewidth(GPIO, int(pw_20))
 time.sleep(1)
 
-# 40%
-set_speed(pi, 0.40)
+print("80%")
+pw_80 = MIN_PW + 0.8 * (MAX_PW - MIN_PW)
+pi.set_servo_pulsewidth(GPIO, int(pw_80))
 time.sleep(1)
 
-# OFF
-set_speed(pi, 0.0)
+print("40%")
+pw_40 = MIN_PW + 0.4 * (MAX_PW - MIN_PW)
+pi.set_servo_pulsewidth(GPIO, int(pw_40))
 time.sleep(1)
+
+print("OFF")
+pi.set_servo_pulsewidth(GPIO, 0)  # IMPORTANT: 0 disables pulses
 
 pi.stop()
