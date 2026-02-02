@@ -1,14 +1,18 @@
 class ActuatorDriver : private MotorDriver{
   public:
-    void move(double vel){  // extends the acutator at vel cm/s, positive for out negative for in
+    void move(float vel){  // extends the acutator at vel cm/s, positive for out negative for in
 
     }
 
-    void extend(double cm){  // move in or out cm amout
+    void extend(float cm){  // move in or out cm amout
 
     }
 
-    void displace(double ml){ // displace ml of air/water
+    void displace(float ml){ // displace ml of air/water
 
     }
-}
+
+    void fill(float percent){ // set replacement of % of air for water
+
+    }
+};

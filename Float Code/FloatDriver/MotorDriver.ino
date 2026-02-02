@@ -7,15 +7,15 @@ class MotorDriver{
 
     }
 
-    void begin(double f){  // start rotating
+    void begin(float f){  // start rotating
       
     }
 
-    void rotateT(double f, double t){  // spin for a period of time
+    void rotateT(float f, float t){  // spin for a period of time
 
     }
 
-    void rotate(double f, double n){  // rotate n times
+    void rotate(float f, float n){  // rotate n times
 
     }
 
