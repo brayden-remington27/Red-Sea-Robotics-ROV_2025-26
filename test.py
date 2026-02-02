@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-RASPI_HOST = "10.42.0.2"
+RASPI_HOST = "10.42.0.91"
 MOTOR_PIN = 26
 
 # Pulse widths in microseconds
@@ -28,7 +28,7 @@ pi.set_mode(MOTOR_PIN, pigpio.OUTPUT)
 
 # OFF
 set_speed(pi, 0.0)
-time.sleep(1)
+time.sleep(5)
 
 # 20%
 set_speed(pi, 0.20)
