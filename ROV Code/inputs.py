@@ -20,19 +20,24 @@ inputs: list = [False, False, {
         "mode": "Stabilized"
     }
 }]
+
 toggleMode: bool = True
 
 # primary variable, containing the inputs from the controller, to get data from, and to modify
 controller: pygame.joystick.JoystickType = None
 
-def init(usingController: bool=True):
+minActivation: float
+
+def init(MACT: float, usingController: bool=True):
     if usingController:
         
         global controller
         global inputs
         #global toggles
         global toggleMode
-        
+        global minActivation
+        minActivation = MACT
+
         # Check for and initialize controllers
         if pygame.joystick.get_count() > 0:  # it will only recognize one connected controller
             controller = pygame.joystick.Joystick(0)
@@ -65,16 +70,16 @@ def getInputs() -> list:
         if event.type == pygame.JOYAXISMOTION:
             #print("#####################################################################")
             if event.axis == 0:
-                inputs[2]["thumbsticks"]["lx"] = event.value
+                inputs[2]["thumbsticks"]["lx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             if event.axis == 1:
-                inputs[2]["thumbsticks"]["ly"] = event.value
+                inputs[2]["thumbsticks"]["ly"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             if event.axis == 3:
-                inputs[2]["thumbsticks"]["rx"] = event.value
+                inputs[2]["thumbsticks"]["rx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             if event.axis == 4:
-                inputs[2]["thumbsticks"]["ry"] = event.value
+                inputs[2]["thumbsticks"]["ry"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             
         if event.type == pygame.JOYHATMOTION:

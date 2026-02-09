@@ -15,5 +15,5 @@ def init(config):
     MAX_PW = config.getfloat("PWM", "MAX_PW", fallback=0.0019)
     MIN_PW = config.getfloat("PWM", "MIN_PW", fallback=0.0011)
 
-def updateActivations(activations: dict):
+def sendActivations(activations: dict):
     pass  # TODO: actually send the activations to Tyrone

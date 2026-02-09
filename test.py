@@ -1,35 +1,43 @@
 import pigpio
 import time
 
-PI_IP = "10.42.0.91"
-GPIO = 26
+PIN = 16
 
-MIN_PW = 1100   # off / minimum
-MAX_PW = 1900   # max
+NEUTRAL = 1500
+MIN = 1100
+MAX = 1900
 
-pi = pigpio.pi(PI_IP)
-assert pi.connected, "pigpio not connected"
+def percent_to_pw(p):
+    return int(NEUTRAL + p * (MAX - NEUTRAL))
 
-print("OFF")
-pi.set_servo_pulsewidth(GPIO, MIN_PW)
-time.sleep(1)
+pi = pigpio.pi('10.42.0.91')
+assert pi.connected, "pigpio not connected"   # local pigpiod
 
-print("20%")
-pw_20 = MIN_PW + 0.2 * (MAX_PW - MIN_PW)
-pi.set_servo_pulsewidth(GPIO, int(pw_20))
-time.sleep(1)
+if not pi.connected:
+    raise RuntimeError("pigpio not connected")
 
-print("80%")
-pw_80 = MIN_PW + 0.8 * (MAX_PW - MIN_PW)
-pi.set_servo_pulsewidth(GPIO, int(pw_80))
-time.sleep(1)
+# ---- ARM ESC ----
+pi.set_servo_pulsewidth(PIN, NEUTRAL)
+time.sleep(3)   # IMPORTANT
 
-print("40%")
-pw_40 = MIN_PW + 0.4 * (MAX_PW - MIN_PW)
-pi.set_servo_pulsewidth(GPIO, int(pw_40))
-time.sleep(1)
+# ---- TEST SEQUENCE ----
+sequence = [
+    0.0,   # off
+    0.2,   # 20%
+    0.8,   # 80%
+    0.4,   # 40%
+    0.0    # off
+]
 
-print("OFF")
-pi.set_servo_pulsewidth(GPIO, 0)  # IMPORTANT: 0 disables pulses
+for val in sequence:
+    pw = percent_to_pw(val)
+    pi.set_servo_pulsewidth(PIN, pw)
+    time.sleep(1)
 
+# ---- DISARM CLEANLY ----
+pi.set_servo_pulsewidth(PIN, NEUTRAL)
+time.sleep(2)
+
+# release the pin
+pi.set_servo_pulsewidth(PIN, 0)
 pi.stop()

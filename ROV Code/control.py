@@ -30,6 +30,7 @@ def init(config):
     CLIENT_NAME = config.get("NETWORKING", "CLIENT_NAME", fallback="redsearobotics")
 
     UPDATE_RATE = config.getint("CONFIG", "UPDATE_RATE", fallback=60)
+    MIN_ACTIVATION = config.getfloat("CONFIG", "MIN_ACTIVATION", fallback=0.10)
     
     WIDTH = config.getint("SCREEN", "WIDTH", fallback=600)
     HEIGHT = config.getint("SCREEN", "HEIGHT", fallback=890)
@@ -47,7 +48,7 @@ def init(config):
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
     outputs.init(config)
-    inputs.init(True)
+    inputs.init(MIN_ACTIVATION, True)
 
 
 
@@ -78,7 +79,7 @@ def loop():
         
         ###### OUTPUTS ######
         
-        outputs.updateActivations(activations)
+        outputs.sendActivations(activations)
         
         ###### CAMERA ######
         
