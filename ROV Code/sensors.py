@@ -1,6 +1,6 @@
 flags = {
     "piConnect": False,
-    "LEAK_PIN": config.getint("GENERAL", "LEAK_PIN", fallback=5)
+    #"LEAK_PIN": config.getint("GENERAL", "LEAK_PIN", fallback=5)
 }  # TODO: I also need to set up a flag to detect pi connection
 data = {
     "intTemp": 0,

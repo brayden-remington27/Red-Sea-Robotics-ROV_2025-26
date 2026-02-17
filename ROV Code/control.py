@@ -63,7 +63,7 @@ def loop():
         ###### EXTRACT INPUTS ######
         
         ins = inputs.getInputs()[2]  # 2: controller inputs
-        activations = sticks_to_activations(ins)
+        activations = sticks_to_percents(ins["thumbsticks"])
         
         
         displayData = {
@@ -103,6 +103,29 @@ def loop():
     camera.quit()
     outputs.quit()
 
-def sticks_to_activations(axes: dict):
-    # TODO: make sure to implement minimum values, this controller tokyo driftin to the moon
-    pass
+def sticks_to_percents(axes: dict):
+    out = {
+        "FRONT_LEFT": 0.0,
+        "FRONT_RIGHT": 0.0,
+        "UP_BACKLEFT": 0.0,
+        "UP_BACKRIGHT": 0.0,
+        "UP_FRONTLEFT": 0.0,
+        "UP_FRONTRIGHT": 0.0
+    }
+    
+    #AXIS:
+    #   "lx": _
+    #   "ly": _
+    #   "rx": _
+    #   "ry": _
+    
+    # MOVE
+    out["FRONT_LEFT"] = axes["ry"]
+    out["FRONT_RIGHT"] = axes["ry"]
+    
+    # ROTATE
+    out["FRONT_LEFT"] = -axes["rx"]
+    out["FRONT_RIGHT"] = axes["rx"]
+    
+    
+    return out

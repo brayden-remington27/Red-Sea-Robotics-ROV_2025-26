@@ -74,6 +74,7 @@ def quit():
     if pi is None:
         return
     
+    
     for pin in PINS.values():
         pi.set_servo_pulsewidth(pin, MID_PW)
 
