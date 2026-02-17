@@ -101,6 +101,7 @@ def loop():
     
     draw.quit()
     camera.quit()
+    outputs.quit()
 
 def sticks_to_activations(axes: dict):
     # TODO: make sure to implement minimum values, this controller tokyo driftin to the moon

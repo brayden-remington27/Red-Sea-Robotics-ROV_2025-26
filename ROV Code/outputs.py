@@ -1,8 +1,19 @@
 import pigpio
 import sensors
+import time
+
+def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
+    p = max(-1.0, min(1.0, 0))  # clamp
+    if p >= 0:
+        return int(MID_PW + p * (MAX_PW - MID_PW))
+    else:
+        return int(MID_PW + p * (MID_PW - MIN_PW))
+
+
 
 def init(config):
 
+    global pi
     global PINS
     PINS = {
         "FRONT_LEFT_PIN": config.getint("THRUSTERS", "FRONT_LEFT_PIN", fallback=19),
@@ -13,36 +24,63 @@ def init(config):
         "UP_FRONTRIGHT_PIN": config.getint("THRUSTERS", "UP_FRONTRIGHT_PIN", fallback=6),
 
         "ARM_PIN": config.getint("GENERAL", "ARM_PIN", fallback=13),
-        "CAMERA_PIN": config.getint("GENERAL", "CAMERA_PIN", fallback=25),
-        "LEAK_PIN": config.getint("GENERAL", "LEAK_PIN", fallback=5)
+        "CAMERA_PIN": config.getint("GENERAL", "CAMERA_PIN", fallback=25)
     }
     global MAX_PW, MIN_PW, MID_PW
     MAX_PW = config.getint("PWM", "MAX_PW", fallback=1900)
     MIN_PW = config.getint("PWM", "MIN_PW", fallback=1100)
     MID_PW = config.getint("PWM", "MID_PW", fallback=1500)
 
-
-
-    #global pi
-    #pi = pigpio.pi(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
-    #assert pi.connected, "Pi not Connected"
-
     print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
 
     pi = pigpio.pi('10.42.0.91')
+    #pi = pigpio.pi(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
     assert pi.connected, "pigpio not connected"   # local pigpiod
+    if not pi.connected: raise RuntimeError("pigpio Not Connected")
 
-    if not pi.connected:
-        raise RuntimeError("pigpio not connected")
+    if pi.connected: sensors.setPiConnection(True)  # transmit pi status to sensors, to then be picked up by control then draw
+    else: sensors.setPiConnection(False)
+    
+    
+    
+    # make sure to arm
+    print("Arming ESCs/Motors")
+    for pin in PINS.values(): pi.set_servo_pulsewidth(pin, MID_PW)
+    time.sleep(3)  # needs some time after being sent inputs
+    print("ESCs Armed")
 
-    if pi.connected:
-        sensors.setPiConnection(True)  # transmit pi status to sensors, to then be picked up by control then draw
-    else:
-        sensors.setPiConnection(False)
 
 
-def activationToPw(p):
-    return int(MID_PW + p * (MAX_PW - MID_PW))
 
-def sendActivations(activations: dict):
-    pass  # TODO: actually send the activations to Tyrone
+def sendActivations(percents: dict):
+    if pi is None: return  # make sure
+    
+    for name, percent in percents.items():
+        if name not in PINS:  # make sure
+            continue
+
+        pin = PINS[name]
+        pwm = percentToPWM(percent)
+        pi.set_servo_pulsewidth(pin, pwm)
+
+
+
+
+def quit():
+    global pi
+    
+    print("Stopping motors")
+
+    if pi is None:
+        return
+    
+    for pin in PINS.values():
+        pi.set_servo_pulsewidth(pin, MID_PW)
+
+    time.sleep(2)
+
+    for pin in PINS.values():
+        pi.set_servo_pulsewidth(pin, 0)
+
+    pi.stop()
+    pi = None
