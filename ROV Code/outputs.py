@@ -53,6 +53,8 @@ def init(config):
 
 
 def sendActivations(percents: dict):
+    print(percents)
+
     if pi is None: return  # make sure
     
     for name, percent in percents.items():

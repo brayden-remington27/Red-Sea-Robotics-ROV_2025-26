@@ -119,13 +119,9 @@ def sticks_to_percents(axes: dict):
     #   "rx": _
     #   "ry": _
     
-    # MOVE
-    out["FRONT_LEFT"] = axes["ry"]
-    out["FRONT_RIGHT"] = axes["ry"]
-    
-    # ROTATE
-    out["FRONT_LEFT"] = -axes["rx"]
-    out["FRONT_RIGHT"] = axes["rx"]
+    # FRONTS
+    out["FRONT_LEFT"] = -axes["ly"] + min(axes["rx"]/2.0, 0)
+    out["FRONT_RIGHT"] = -axes["ly"] - max(axes["rx"]/2.0, 0)
     
     
     return out
