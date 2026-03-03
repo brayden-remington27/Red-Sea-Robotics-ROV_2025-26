@@ -22,7 +22,7 @@ def init(config):
     # Map logical motor names used by control.py to config pin settings
     PINS = {
         # horizontal/front thrusters
-        "LEFT": config.getint("THRUSTERS", "LEFT", fallback=19),
+        "LEFT":  config.getint("THRUSTERS", "LEFT", fallback=19),
         "RIGHT": config.getint("THRUSTERS", "RIGHT", fallback=16),
 
         # vertical/up thrusters mapped to quadrant names
