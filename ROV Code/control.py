@@ -74,7 +74,8 @@ def loop():
                 # TODO: (optional) make the minimum viable activation applicable here to avoid confusion
                 "sticks": ins["thumbsticks"],  # joystick movement percentages/activations (with whatever set limit max % being the furthest the joystick can move, not just making the joystick cap not change anything after a certain point)
                 "dpad": ins["hat"]
-            }
+            },
+            "motors": activations  # the final activations being sent to the motors, after being processed by control.py
         }
         
         ###### OUTPUTS ######
@@ -105,12 +106,12 @@ def loop():
 
 def sticks_to_percents(axes: dict):
     out = {
-        "FRONT_LEFT": 0.0,
-        "FRONT_RIGHT": 0.0,
-        "UP_BACKLEFT": 0.0,
-        "UP_BACKRIGHT": 0.0,
-        "UP_FRONTLEFT": 0.0,
-        "UP_FRONTRIGHT": 0.0
+        "LEFT": 0.0,
+        "RIGHT": 0.0,
+        "SW": 0.0,
+        "SE": 0.0,
+        "NW": 0.0,
+        "NE": 0.0
     }
     
     #AXIS:
@@ -120,8 +121,10 @@ def sticks_to_percents(axes: dict):
     #   "ry": _
     
     # FRONTS
-    out["FRONT_LEFT"] = -axes["ly"] + min(axes["rx"]/2.0, 0)
-    out["FRONT_RIGHT"] = -axes["ly"] - max(axes["rx"]/2.0, 0)
+    out["LEFT"] = -axes["ly"] + min(axes["rx"]/2.0, 0)
+    out["RIGHT"] = -axes["ly"] - max(axes["rx"]/2.0, 0)
+    #TODO: fix it so that it goes backwards when opposite is forward on turn
     
+    #TODO: do the rest of the motors
     
     return out

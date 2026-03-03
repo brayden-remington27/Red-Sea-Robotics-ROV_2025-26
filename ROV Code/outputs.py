@@ -2,8 +2,12 @@ import pigpio
 import sensors
 import time
 
+# module-level defaults
+pi = None
+PINS = {}
+
 def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
-    p = max(-1.0, min(1.0, 0))  # clamp
+    p = max(-1.0, min(1.0, p))  # clamp
     if p >= 0:
         return int(MID_PW + p * (MAX_PW - MID_PW))
     else:
@@ -15,14 +19,20 @@ def init(config):
 
     global pi
     global PINS
+    # Map logical motor names used by control.py to config pin settings
     PINS = {
-        "FRONT_LEFT_PIN": config.getint("THRUSTERS", "FRONT_LEFT_PIN", fallback=19),
-        "FRONT_RIGHT_PIN": config.getint("THRUSTERS", "FRONT_RIGHT_PIN", fallback=16),
-        "UP_BACKLEFT_PIN": config.getint("THRUSTERS", "UP_BACKLEFT_PIN", fallback=21),
-        "UP_BACKRIGHT_PIN": config.getint("THRUSTERS", "UP_BACKRIGHT_PIN", fallback=20),
-        "UP_FRONTLEFT_PIN": config.getint("THRUSTERS", "UP_FRONTLEFT_PIN", fallback=26),
-        "UP_FRONTRIGHT_PIN": config.getint("THRUSTERS", "UP_FRONTRIGHT_PIN", fallback=6),
+        # horizontal/front thrusters
+        "LEFT": config.getint("THRUSTERS", "LEFT", fallback=19),
+        "RIGHT": config.getint("THRUSTERS", "RIGHT", fallback=16),
 
+        # vertical/up thrusters mapped to quadrant names
+        # front = N, back = S, left = W, right = E
+        "NW": config.getint("THRUSTERS", "NW", fallback=26),
+        "NE": config.getint("THRUSTERS", "NE", fallback=6),
+        "SW": config.getint("THRUSTERS", "SW", fallback=21),
+        "SE": config.getint("THRUSTERS", "SE", fallback=20),
+
+        # other devices
         "ARM_PIN": config.getint("GENERAL", "ARM_PIN", fallback=13),
         "CAMERA_PIN": config.getint("GENERAL", "CAMERA_PIN", fallback=25)
     }
@@ -53,15 +63,17 @@ def init(config):
 
 
 def sendActivations(percents: dict):
-    print(percents)
+    #print(percents)
 
-    if pi is None: return  # make sure
-    
+    if pi is None:
+        return  # make sure
+
     for name, percent in percents.items():
-        if name not in PINS:  # make sure
+        key = name if name in PINS else name.upper()
+        if key not in PINS:
             continue
 
-        pin = PINS[name]
+        pin = PINS[key]
         pwm = percentToPWM(percent)
         pi.set_servo_pulsewidth(pin, pwm)
 
