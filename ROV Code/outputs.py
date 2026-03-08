@@ -7,6 +7,7 @@ pi = None
 PINS = {}
 
 def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
+    #TODO: not a todo, just saying this clamps even if the joysticks go beyond
     p = max(-1.0, min(1.0, p))  # clamp
     if p >= 0:
         return int(MID_PW + p * (MAX_PW - MID_PW))
@@ -22,7 +23,7 @@ def init(config):
     # Map logical motor names used by control.py to config pin settings
     PINS = {
         # horizontal/front thrusters
-        "LEFT":  config.getint("THRUSTERS", "LEFT", fallback=19),
+        "LEFT": config.getint("THRUSTERS", "LEFT", fallback=19),
         "RIGHT": config.getint("THRUSTERS", "RIGHT", fallback=16),
 
         # vertical/up thrusters mapped to quadrant names
@@ -45,7 +46,8 @@ def init(config):
 
     pi = pigpio.pi('10.42.0.91')
     #pi = pigpio.pi(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
-    assert pi.connected, "pigpio not connected"   # local pigpiod
+    # this one ends up making a bunch of problems
+    #assert pi.connected, "pigpio not connected"   # local pigpiod  
     if not pi.connected: raise RuntimeError("pigpio Not Connected")
 
     if pi.connected: sensors.setPiConnection(True)  # transmit pi status to sensors, to then be picked up by control then draw

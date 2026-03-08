@@ -13,6 +13,7 @@ import outputs
 import camera
 import sterioscope
 import sensors
+import utils
 
 ins = {}  # a dictionary containing all of the activations from the inputs
 motors = {}  # a dictionary containing all of the activations for the motors
@@ -63,7 +64,7 @@ def loop():
         ###### EXTRACT INPUTS ######
         
         ins = inputs.getInputs()[2]  # 2: controller inputs
-        activations = sticks_to_percents(ins["thumbsticks"])
+        activations = utils.sticks_to_percents(ins["thumbsticks"])
         
         
         displayData = {
@@ -103,28 +104,3 @@ def loop():
     draw.quit()
     camera.quit()
     outputs.quit()
-
-def sticks_to_percents(axes: dict):
-    out = {
-        "LEFT": 0.0,
-        "RIGHT": 0.0,
-        "SW": 0.0,
-        "SE": 0.0,
-        "NW": 0.0,
-        "NE": 0.0
-    }
-    
-    #AXIS:
-    #   "lx": _
-    #   "ly": _
-    #   "rx": _
-    #   "ry": _
-    
-    # FRONTS
-    out["LEFT"] = -axes["ly"] + min(axes["rx"]/2.0, 0)
-    out["RIGHT"] = -axes["ly"] - max(axes["rx"]/2.0, 0)
-    #TODO: fix it so that it goes backwards when opposite is forward on turn
-    
-    #TODO: do the rest of the motors
-    
-    return out

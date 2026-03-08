@@ -1,3 +1,5 @@
+//#include <arduino.h>
+
 // start hovering for 5 sec, decend to 10m for 5 seconds, then rise to 0.5m (just below ice) and stay there for a while
 float instructions[][2] = {{0.0, 5.0},{10.0, 5},{0.5, 999.0}};  // this is the list of depths (m) and the time period to stay there (s)
 float moveSpeed = 0.5;  // the speed at which to decend to the specified depths (m/s)
@@ -142,8 +144,8 @@ float ballastWaterMassMax;
 float requiredBallastMass;
 
 // INSTANCES
-PressureDriver manometer();
-ActuatorDriver syringe();
+PressureDriver manometer;
+ActuatorDriver syringe;
 
 
 void setup() {
@@ -188,7 +190,7 @@ float computeRequiredTotalMass(float waterDensity){
 
 // get the percentage of the ballast that needs to be filled given the required total and the water density
 float computeBallastFillFraction(float waterDensity){
-  requiredTotalMass = computeRequiredTotalMass(waterDensity)
+  float requiredTotalMass = computeRequiredTotalMass(waterDensity);
 
   ballastWaterMassMax = BALLAST_MAX_VOLUME * waterDensity;
 
@@ -205,10 +207,10 @@ float computeBallastFillFraction(float waterDensity){
 
 void loop() {
   // required mass for achieving the target speed
-  requiredMass = computeRequiredTotalMass(manometer.get_density(), moveSpeed);
+  requiredMass = computeRequiredTotalMass(manometer.get_density());
 
   // set the syringe to fill with the calculater
-  syringe.fill(computeBallastFillFraction(requiredMass, manometer.get_density()));
+  syringe.fill(computeBallastFillFraction(manometer.get_density()));
   // what fill to set the balast to to get the bouyancy force to get a movement speed equal to the moveSpeed
   // we need to calculate the fill such that the terminal velocity is 0.5 m/s
 }
