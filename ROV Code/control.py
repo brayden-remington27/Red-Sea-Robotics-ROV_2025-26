@@ -40,14 +40,19 @@ def init(config):
     
     CAM1WIDTH = config.getint("CAMERA1", "WIDTH", fallback=854)
     CAM1HEIGHT = config.getint("CAMERA1", "HEIGHT", fallback=480)
+    
+    PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
     ########################################################################################
     
     
     camera.init()
-    camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)
+    camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
+    camera.addCamera(f"rtsp://{PI_IP}:8554/unicast", 640, 480)  # this is for a rtsp data transfer, change port and stuff if needed
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
+    
+    # TODO: Make sure that the ROV, controllers, etc can be disconnected and reconnected while the program is running without crashing it
     outputs.init(config)
     inputs.init(MIN_ACTIVATION, True)
 
@@ -91,9 +96,15 @@ def loop():
         
         # Draw the WEBCAM onto the screen for now, making sure to scale the camera input to the desired size of the surface
         
-        #camera.camera1Display = camera.CV2FrameAsSurface(camera.camera1Display.get_width(), camera.camera1Display.get_height())
-        #already in camera.asSurface(1)
-        draw.update(displayData, camera.asSurface(0))  # Redraw all the text and data
+        # CAMERAS for camera.asSurface(_): (in order of appending in init())
+        # 0 = COMPUTER WEBCAM
+        # 1 = PI IP CAM
+        
+        # TODO: more cameras:
+        # 2 = DOWN CAM
+        # 3 = STERIOSCOPIC 1
+        # 4 = STERIOSCOPIC 2
+        draw.update(displayData, camera.asSurface(1))  # Redraw all the text and data
         if inputs.getInputs()[1]: print("Toggling Fullscreen"); pygame.display.toggle_fullscreen()  # Fullscreen if enter is pressed
         
         

@@ -1,6 +1,7 @@
 import pigpio
 import sensors
 import time
+import configparser  # not sure if needed
 
 # module-level defaults
 pi = None
@@ -43,11 +44,13 @@ def init(config):
     MID_PW = config.getint("PWM", "MID_PW", fallback=1500)
 
     print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
-
-    pi = pigpio.pi('10.42.0.91')
-    #pi = pigpio.pi(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
+    
+    ipUsed = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
+    pi = pigpio.pi(ipUsed)  # TODO: This is a problem spot, sub in for the ip itself 10.42.0.91 if acting up
+    
     # this one ends up making a bunch of problems
     #assert pi.connected, "pigpio not connected"   # local pigpiod  
+    
     if not pi.connected: raise RuntimeError("pigpio Not Connected")
 
     if pi.connected: sensors.setPiConnection(True)  # transmit pi status to sensors, to then be picked up by control then draw

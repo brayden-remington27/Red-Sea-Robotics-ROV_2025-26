@@ -25,9 +25,9 @@ def quit():
     
     
     
-def addCamera(cv2CameraN: int, width: int, height: int):
+def addCamera(source, width: int, height: int):  # source is either a cv2 camera number for a local device, or a url for an ip camera.
     print("Adding new camera")
-    cameraCaptures.append(cv2.VideoCapture(cv2CameraN))
+    cameraCaptures.append(cv2.VideoCapture(source))
     cameraDisplays.append(pygame.Surface((width, height)))
 
 # TODO: fix this ai cv2 recording code to work within my program. currently it would halt it, maybe threads or add a writeFrame function to work in the larger loop
