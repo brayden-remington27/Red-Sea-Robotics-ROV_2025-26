@@ -46,7 +46,7 @@ def init(config):
     print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
     
     ipUsed = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
-    pi = pigpio.pi(ipUsed)  # TODO: This is a problem spot, sub in for the ip itself 10.42.0.91 if acting up
+    pi = pigpio.pi(ipUsed)  # TODO: This is a problem spot, sub in for the ip itself 10.42.0.187 if acting up
     
     # this one ends up making a bunch of problems
     #assert pi.connected, "pigpio not connected"   # local pigpiod  
