@@ -36,7 +36,7 @@ def update(data: dict, cameraDisplay: pygame.Surface):
     # TODO: implement dynamic changing colors of status text, possibly flashing red highlight for leak detected
     printer.tprint(window, "STATUS:")  # warnings
     printer.indent()
-    printer.errprint(window, "ROV Disconnected", "grey" if data["status"]["piConnect"] else "orange")
+    printer.errprint(window, "ROV Connected" if data["status"]["piConnect"] else "ROV Disconnected", "grey" if data["status"]["piConnect"] else "orange")
     printer.indent()
     printer.errprint(window, "No Leak Detected", "green")
     printer.errprint(window, "Camera Disconnected")
