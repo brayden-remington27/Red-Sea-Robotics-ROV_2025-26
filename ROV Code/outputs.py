@@ -4,9 +4,9 @@ import time
 import configparser  # not sure if needed
 
 
-def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
+def percentToPWM(p, clamp: float):  # turns the percent value to a 1100–1900 clamped
     #TODO: not a todo, just saying this clamps even if the joysticks go beyond
-    p = max(-1.0, min(1.0, p))  # clamp
+    p = max(-clamp, min(1.0, clamp))  # rough clamp, physically doesn't let it go beyond
     if p >= 0:
         return int(MID_PW + p * (MAX_PW - MID_PW))
     else:
@@ -59,14 +59,15 @@ def init(config, raspi: pigpio.pi):
     
     # make sure to arm
     print("Arming ESCs/Motors")
-    for pin in PINS.values(): pi.set_servo_pulsewidth(pin, MID_PW)
+    for pin in PINS.values(): 
+        pi.set_servo_pulsewidth(pin, MID_PW)
     time.sleep(3)  # needs some time after being sent inputs
     print("ESCs Armed")
 
 
 
 
-def sendActivations(percents: dict):
+def sendActivations(percents: dict, clamp: float):
     #print(percents)
 
     if pi is None:
@@ -78,7 +79,7 @@ def sendActivations(percents: dict):
             continue
 
         pin = PINS[key]
-        pwm = percentToPWM(percent)
+        pwm = percentToPWM(percent, clamp)  # final clamping to ensure nothing is beyond 80%
         pi.set_servo_pulsewidth(pin, pwm)
 
 

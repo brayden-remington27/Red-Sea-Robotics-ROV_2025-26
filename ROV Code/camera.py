@@ -2,6 +2,8 @@ import pygame
 import subprocess
 import threading
 
+import sensors
+
 PI_IP: str
 cameras = {}
 
@@ -82,9 +84,12 @@ def _cameraReader(name):
         raw = cam["pipe"].stdout.read(frame_size)  # get the latest outputs from the pipe
 
         if len(raw) != frame_size:  # check that the frame is full to remove partial or composited frames
+            sensors.flags["cameraConnect"] = False  # flag that a camera is not sending data
             continue  # if so, run again, don't update
+            
 
         cam["latest"] = raw  # update the frame with the new data
+        sensors.flags["cameraConnect"] = True  # flag that a camera is sending data
     
     print("Quitting Camera", name, "\'s thread")
 

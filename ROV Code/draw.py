@@ -38,9 +38,9 @@ def update(data: dict, cameraDisplay):
     printer.indent()
     printer.errprint(window, "ROV Connected" if data["status"]["piConnect"] else "ROV Disconnected", "grey" if data["status"]["piConnect"] else "orange")
     printer.indent()
-    printer.errprint(window, "No Leak Detected", "green")
-    printer.errprint(window, "Camera Disconnected")
-    printer.errprint(window, "Servo Disconnected")
+    printer.errprint(window, "Leak Detected" if data["status"]["leak"] else "No Leak Detected", "red" if data["status"]["leak"] else "green")
+    printer.errprint(window, "Camera Connected" if data["status"]["cameraConnect"] else "Camera Disconnected", "grey" if data["status"]["cameraConnect"] else "orange")
+    printer.errprint(window, "Servo Disconnected")  # is this possible? check #TODO: remove if can
     printer.errprint(window, "Gyro Disconnected")
     printer.errprint(window, "Thermo Disconnected")
     printer.outdent()
