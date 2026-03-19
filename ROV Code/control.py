@@ -65,7 +65,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.sticks_to_percents(ins["thumbsticks"])
+        activations = utils.sticks_to_percents(ins["thumbsticks"], 0.8)
         
         
         displayData = {

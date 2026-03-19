@@ -1,6 +1,6 @@
-# Just functions. I didn't want to make this file, maybe I'll figure out a way to get rid of it later.
+# Just functions that don't apply to any file specifically. I didn't want to make this file, maybe I'll figure out a way to get rid of it later.
 
-def sticks_to_percents(axes: dict):
+def sticks_to_percents(axes: dict, max_scale = 0.8):
     out = {
         "LEFT": 0.0,
         "RIGHT": 0.0,
@@ -16,12 +16,34 @@ def sticks_to_percents(axes: dict):
     #   "rx": _
     #   "ry": _
     
-    # FRONTS
-    out["LEFT"] = remap(-axes["ly"] + min(axes["rx"]/2.0, 0), -1, 1, -0.8, 0.8)  # clamping it to |0.8| max thrust
-    out["RIGHT"] = remap(-axes["ly"] - max(axes["rx"]/2.0, 0), -1, 1, -0.8, 0.8)
-    #TODO: fix it so that it goes backwards when opposite is forward on turn
+    move = axes["ly"]
+    turn = axes["rx"]
+    profile = axes["ry"]
+    
+    ###### FRONTS ######
+    
+    # default tank tread movement, range from -2 to 2
+    out["LEFT"] = move + turn
+    out["RIGHT"] = move - turn
+    
+    # normalize defaults, -1 to 1
+    max_mag = max(1.0, abs(out["LEFT"]), abs(out["RIGHT"]))
+    out["LEFT"] /= max_mag
+    out["RIGHT"] /= max_mag
+    
+    # scale to not burn out buck
+    out["LEFT"] *= max_scale
+    out["RIGHT"] += max_scale
+    
     
     #TODO: do the rest of the motors
+    ###### UP/DOWN ######
+    
+    # applies to all up/down motors ot just move up and down as ry says
+    out["SW"] = profile*max_scale
+    out["SE"] = profile*max_scale
+    out["NW"] = profile*max_scale
+    out["NE"] = profile*max_scale
     
     return out
 
