@@ -1,8 +1,3 @@
-# import pigpio
-# pi = pigpio.pi('raspberrypi.local')   # or IP address of the Pi
-# pi.write(17, 0)
-# print(pi.connected)
-
 import pygame
 import ast # literally only using for parsing tuples from config
 import configparser
@@ -96,7 +91,7 @@ def loop():
         ###### DRAW ######
         
         # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
-        camera_surface = camera.getSurface("main")
+        camera_surface = camera.getSurface("main", (854, 480))
         draw.update(displayData, camera_surface)
         # print camera status once; details are in draw
         #print(f"camera_surface={camera_surface}")

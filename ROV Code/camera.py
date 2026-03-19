@@ -89,7 +89,7 @@ def _cameraReader(name):
     print("Quitting Camera", name, "\'s thread")
 
 
-def getSurface(name):
+def getSurface(name, scaledDimensions: tuple = None):
     cam = cameras[name]
     raw = cam["latest"]  # pull data from the camera, updated via the individual threads
 
@@ -97,7 +97,9 @@ def getSurface(name):
         return None
 
     w, h = cam["size"]
-    return pygame.image.frombuffer(raw, (w, h), "RGB")  # return a pygame surface made from the raw data
+    scaledDimensions = (w, h) if scaledDimensions == None else scaledDimensions  # this is so inneficient istg #TODO: make this better please i beg you
+    def_size = pygame.image.frombuffer(raw, (w, h), "RGB")  # a pygame surface made from the raw data at defaut size
+    return pygame.transform.scale(def_size, scaledDimensions)
 
 
 def quit():
