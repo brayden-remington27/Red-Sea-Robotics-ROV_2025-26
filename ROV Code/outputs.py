@@ -3,9 +3,6 @@ import sensors
 import time
 import configparser  # not sure if needed
 
-# module-level defaults
-pi = None
-PINS = {}
 
 def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
     #TODO: not a todo, just saying this clamps even if the joysticks go beyond
@@ -17,7 +14,7 @@ def percentToPWM(p):  # turns the percent value to a 1100–1900 clamped
 
 
 
-def init(config):
+def init(config, raspi: pigpio.pi):
 
     global pi
     global PINS
@@ -48,7 +45,7 @@ def init(config):
     #print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
     
     
-    pi = pigpio.pi(PI_IP)
+    pi = raspi
     
     # this one ends up making a bunch of problems
     #assert pi.connected, "pigpio not connected"   # local pigpiod  

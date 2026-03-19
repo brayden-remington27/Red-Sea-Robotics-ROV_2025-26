@@ -1,6 +1,7 @@
 import pygame
 import ast # literally only using for parsing tuples from config
 import configparser
+import pigpio
 
 import draw
 import inputs
@@ -37,8 +38,11 @@ def init(config):
     CAM1HEIGHT = config.getint("CAMERA1", "HEIGHT", fallback=480)
     
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
+
+    LEAK_PIN = config.getint("GENERAL", "LEAK_PIN", fallback=5)
+
     ########################################################################################
-    
+    pi = pigpio.pi(PI_IP)
     
     camera.init(PI_IP)
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
@@ -48,9 +52,9 @@ def init(config):
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
     
     # TODO: Make sure that the ROV, controllers, etc can be disconnected and reconnected while the program is running without crashing it
-    outputs.init(config)
+    outputs.init(config, pi)
     inputs.init(MIN_ACTIVATION, True)
-
+    sensors.init(LEAK_PIN, pi)
 
 
 
@@ -82,7 +86,7 @@ def loop():
         
         ###### OUTPUTS ######
         
-        #outputs.sendActivations(activations)
+        outputs.sendActivations(activations)
         
         ###### CAMERA ######
         
