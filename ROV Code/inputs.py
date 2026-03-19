@@ -5,6 +5,8 @@
 # I'm not going to do that.
 
 import pygame
+import sensors
+
 pygame.init()
 pygame.joystick.init()
 
@@ -43,13 +45,16 @@ def init(MACT: float, usingController: bool=True):
             controller = pygame.joystick.Joystick(0)
             controller.init()
             print("Controller Connected: ", controller.get_name())
+            sensors.setControllerConnection(True)
             
         else:
             print("No controllers found, defaulting to keyboard input")
+            sensors.setControllerConnection(False)
             keyboardDefault = True
+        
     elif keyboardDefault:
+        sensors.setControllerConnection(False)
         # TODO: Implement keyboard controlling code
-        pass
             
 # As it stands:
 # 0: if quit, true

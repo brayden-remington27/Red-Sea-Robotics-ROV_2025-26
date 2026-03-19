@@ -44,7 +44,7 @@ def update(data: dict, cameraDisplay):
     printer.errprint(window, "Gyro Disconnected")
     printer.errprint(window, "Thermo Disconnected")
     printer.outdent()
-    printer.errprint(window, "Controller Disconnected", "yellow")
+    printer.errprint(window, "Controller Connected" if data["status"]["controllerConnect"] else "Controller Disconnected", "grey" if data["status"]["controllerConnect"] else "yellow")
     printer.outdent()
     printer.print(window, "")
     printer.print(window, "")

@@ -1,5 +1,6 @@
 flags = {
     "piConnect": False,
+    "controllerConnect": False
     #"LEAK_PIN": config.getint("GENERAL", "LEAK_PIN", fallback=5)
 }  # TODO: I also need to set up a flag to detect pi connection
 data = {
@@ -11,3 +12,6 @@ data = {
 
 def setPiConnection(c: bool):
     flags["piConnect"] = c
+
+def setControllerConnection(c: bool):
+    flags["controllerConnect"] = c
