@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-PIN = 16
+PIN = 19
 
 NEUTRAL = 1500
 MIN = 1100

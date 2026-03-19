@@ -73,7 +73,7 @@ def sendActivations(percents: dict):
     #print(percents)
 
     if pi is None:
-        return  # make sure
+        return  # make sure, if there isn't a pi don't try to send
 
     for name, percent in percents.items():
         key = name if name in PINS else name.upper()

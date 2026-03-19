@@ -47,7 +47,7 @@ def init(config):
     
     camera.init(PI_IP)
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
-    camera.addCamera("main", f"rtsp://{PI_IP}:8554/video0_unicast", (640, 480))  # this is for a rtsp data transfer, change port and stuff if needed
+    camera.addCamera("main", f"rtsp://{PI_IP}:8554/video0_unicast", (1280, 720))  # this is for a rtsp data transfer, change port and stuff if needed
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
