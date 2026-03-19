@@ -45,9 +45,9 @@ def init(config):
     ########################################################################################
     
     
-    camera.init()
-    camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
-    camera.addCamera(f"rtsp://{PI_IP}:8554/unicast", 640, 480)  # this is for a rtsp data transfer, change port and stuff if needed
+    camera.init(PI_IP)
+    #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
+    camera.addCamera("main", f"rtsp://{PI_IP}:8554/unicast", (640, 480))  # this is for a rtsp data transfer, change port and stuff if needed
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
@@ -104,7 +104,7 @@ def loop():
         # 2 = DOWN CAM
         # 3 = STERIOSCOPIC 1
         # 4 = STERIOSCOPIC 2
-        draw.update(displayData, camera.asSurface(1))  # Redraw all the text and data
+        draw.update(displayData, camera.getSurface("main"))  # Redraw all the text and data
         if inputs.getInputs()[1]: print("Toggling Fullscreen"); pygame.display.toggle_fullscreen()  # Fullscreen if enter is pressed
         
         

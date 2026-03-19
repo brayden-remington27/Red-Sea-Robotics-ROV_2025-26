@@ -27,7 +27,7 @@ def init(WD, HT, BGC, resize=True):
 # TODO: reformat it so that the camera can be on a seperate window, and so that the warnings are square lights with lables
 
 # Clear and redraw window
-def update(data: dict, cameraDisplay: pygame.Surface):
+def update(data: dict, cameraDisplay):
     window.fill(BACKGROUND_COLOR)
     printer.reset()
     
@@ -86,7 +86,8 @@ def update(data: dict, cameraDisplay: pygame.Surface):
     printer.tprint(window, "CAMERA:")
     
     # Bring camera1Display from the camera.py to control.py update, and fed to draw.py as cameraDisplay
-    window.blit(cameraDisplay, (500, 65))
+    if cameraDisplay:  # this is checking that the frame is full from the stream and can print nicely. if it wasn't, it will return none and won't blit
+        window.blit(cameraDisplay, (500, 65))
     
     pygame.display.flip()
 
