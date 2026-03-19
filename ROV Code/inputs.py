@@ -78,13 +78,13 @@ def getInputs() -> list:
                 inputs[2]["thumbsticks"]["lx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             if event.axis == 1:
-                inputs[2]["thumbsticks"]["ly"] = event.value if(abs(event.value) > minActivation) else 0.0
+                inputs[2]["thumbsticks"]["ly"] = -event.value if(abs(event.value) > minActivation) else 0.0  # for some reason the y's are inverted... negative is up, idk
                 #print(event.value)
             if event.axis == 3:
                 inputs[2]["thumbsticks"]["rx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             if event.axis == 4:
-                inputs[2]["thumbsticks"]["ry"] = event.value if(abs(event.value) > minActivation) else 0.0
+                inputs[2]["thumbsticks"]["ry"] = -event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
             
         if event.type == pygame.JOYHATMOTION:
