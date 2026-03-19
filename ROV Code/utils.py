@@ -33,7 +33,7 @@ def sticks_to_percents(axes: dict, max_scale = 0.8):
     
     # scale to not burn out buck
     out["LEFT"] *= max_scale
-    out["RIGHT"] += max_scale
+    out["RIGHT"] *= max_scale
     
     
     #TODO: do the rest of the motors

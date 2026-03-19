@@ -82,7 +82,7 @@ def loop():
         
         ###### OUTPUTS ######
         
-        outputs.sendActivations(activations)
+        #outputs.sendActivations(activations)
         
         ###### CAMERA ######
         
