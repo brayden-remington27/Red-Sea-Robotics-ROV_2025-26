@@ -102,11 +102,26 @@ def getSurface(name):
 
 def quit():
     for name in list(cameras.keys()):  # delete and terminate a bunch of data from the cameras dictionary
-        cameras[name]["running"] = False  # end all threads
-        cameras[name]["thread"].join()  # join the threads back to the main thread
-        cameras[name]["pipe"].terminate()
-        cameras[name]["pipe"].wait()
-        del cameras[name]
+        cam = cameras[name]
+
+        cam["running"] = False  # end the loop in the thread's parent function
+
+        if cam["pipe"].poll() is None:  # if it's still running
+            cam["pipe"].terminate()  # kill it
+        if cam["pipe"].stdout:  # if the stdout of the pipe still eists
+            cam["pipe"].stdout.close()  # close it
+        
+        if cam["thread"] and cam["thread"].is_alive():  # if the thread exists and is open
+            cam["thread"].join()  # join the thread back to the main thread
+        
+        # make sure the ffmpeg is gone
+        try:
+            cam["pipe"].wait(timeout=1) # wait a second for the timeout
+        except subprocess.TimeoutExpired:
+            cam["pipe"].kill()  # forcefully get it gone
+            cam["pipe"].wait()
+        
+        del cameras[name]  # get rid of that camera dictionary entry in cameras
 
 
 
