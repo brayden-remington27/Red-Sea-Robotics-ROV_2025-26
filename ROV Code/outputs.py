@@ -43,10 +43,12 @@ def init(config):
     MIN_PW = config.getint("PWM", "MIN_PW", fallback=1100)
     MID_PW = config.getint("PWM", "MID_PW", fallback=1500)
 
-    print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
+    PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
+
+    #print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
     
-    ipUsed = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
-    pi = pigpio.pi('10.42.0.187')  # TODO: This is a problem spot, sub in for the ip itself 10.42.0.187 if acting up
+    
+    pi = pigpio.pi(PI_IP)
     
     # this one ends up making a bunch of problems
     #assert pi.connected, "pigpio not connected"   # local pigpiod  

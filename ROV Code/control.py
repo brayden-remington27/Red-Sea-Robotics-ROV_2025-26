@@ -47,7 +47,7 @@ def init(config):
     
     camera.init(PI_IP)
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
-    camera.addCamera("main", f"rtsp://{PI_IP}:8554/unicast", (640, 480))  # this is for a rtsp data transfer, change port and stuff if needed
+    camera.addCamera("main", f"rtsp://{PI_IP}:8554/video0_unicast", (640, 480))  # this is for a rtsp data transfer, change port and stuff if needed
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
@@ -68,7 +68,8 @@ def loop():
         
         ###### EXTRACT INPUTS ######
         
-        ins = inputs.getInputs()[2]  # 2: controller inputs
+        all_inputs = inputs.getInputs()
+        ins = all_inputs[2]  # 2: controller inputs
         activations = utils.sticks_to_percents(ins["thumbsticks"])
         
         
@@ -94,23 +95,20 @@ def loop():
         
         ###### DRAW ######
         
-        # Draw the WEBCAM onto the screen for now, making sure to scale the camera input to the desired size of the surface
-        
-        # CAMERAS for camera.asSurface(_): (in order of appending in init())
-        # 0 = COMPUTER WEBCAM
-        # 1 = PI IP CAM
-        
-        # TODO: more cameras:
-        # 2 = DOWN CAM
-        # 3 = STERIOSCOPIC 1
-        # 4 = STERIOSCOPIC 2
-        draw.update(displayData, camera.getSurface("main"))  # Redraw all the text and data
-        if inputs.getInputs()[1]: print("Toggling Fullscreen"); pygame.display.toggle_fullscreen()  # Fullscreen if enter is pressed
-        
-        
-        
+        # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
+        camera_surface = camera.getSurface("main")
+        draw.update(displayData, camera_surface)
+        # print camera status once; details are in draw
+        #print(f"camera_surface={camera_surface}")
+
+        if all_inputs[1]:
+            print("Toggling Fullscreen")
+            pygame.display.toggle_fullscreen()  # Fullscreen if enter is pressed
+
         ###### FINAL CHECKS ######
-        if inputs.getInputs()[0]: print("Quitting"); running = False # Quit if window closed
+        if all_inputs[0]:
+            print("Quitting")
+            running = False # Quit if window closed
     
     draw.quit()
     camera.quit()

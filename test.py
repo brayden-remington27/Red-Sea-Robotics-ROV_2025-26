@@ -10,7 +10,7 @@ MAX = 1900
 def percent_to_pw(p):
     return int(NEUTRAL + p * (MAX - NEUTRAL))
 
-pi = pigpio.pi('10.42.0.91')
+pi = pigpio.pi('10.42.0.187')
 assert pi.connected, "pigpio not connected"   # local pigpiod
 
 if not pi.connected:
