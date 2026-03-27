@@ -1,6 +1,6 @@
 # Just functions that don't apply to any file specifically. I didn't want to make this file, maybe I'll figure out a way to get rid of it later.
 
-def sticks_to_percents(axes: dict, max_scale = 0.8):
+def inToOutPercent(axes: dict, max_scale = 0.8):
     out = {
         "LEFT": 0.0,
         "RIGHT": 0.0,

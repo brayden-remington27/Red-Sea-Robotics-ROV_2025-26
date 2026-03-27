@@ -6,7 +6,9 @@ import configparser  # not sure if needed
 
 def percentToPWM(p, clamp: float):  # turns the percent value to a 1100–1900 clamped
     #TODO: not a todo, just saying this clamps even if the joysticks go beyond
-    p = max(-clamp, min(1.0, clamp))  # rough clamp, physically doesn't let it go beyond
+
+    # N of times I forgot to include p within this function so it just returned a constant value: 2; something something nickle
+    p = max(-clamp, min(clamp, p))  # barbaric clamp, physically doesn't let it go beyond
     if p >= 0:
         return int(MID_PW + p * (MAX_PW - MID_PW))
     else:

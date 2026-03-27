@@ -29,7 +29,9 @@ def init(_leak_pin, raspi: pigpio.pi):
     pi.set_glitch_filter(leak_pin, 20000)  # any fluctuation less than 20ms isn't counted
 
 def update():
-    flags["leak"] = not pi.read(leak_pin)  # since the default is true, set to the opposite to say if there's a leak or not
+    #print(pi.read(leak_pin))
+    flags["leak"] = pi.read(leak_pin)  # since I regestered the default as true I don't need to invert it even though 
+    # the pin itself is constantly giving 1 if dry and 0 if wet
 
 def setPiConnection(c: bool):
     flags["piConnect"] = c
