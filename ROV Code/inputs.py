@@ -15,12 +15,15 @@ inputs: list = [False, False, {
         "lx": 0.0,
         "ly": 0.0,
         "rx": 0.0,
-        "ry": 0.0
+        "ry": 0.0,
     },
     "hat": (0,0),
-    "buttons": {
-        "mode": "Stabilized"
-    }
+    "triggers": {
+        "lt": 0.0,
+        "rt": 0.0
+    },
+    "buttons": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    # A, B, X, Y, Lb, Rb, dsp, mnu, Xbox, Lj, Rj
 }]
 
 toggleMode: bool = True
@@ -65,31 +68,45 @@ def getInputs() -> list:
         #print("checking inputs")
         if event.type == pygame.QUIT:
             inputs[0] = True
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 inputs[1] = True
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RETURN:
                 inputs[1] = False
         
-        if event.type == pygame.JOYAXISMOTION:
+        # THUMBSTICKS
+        elif event.type == pygame.JOYAXISMOTION:
             #print("#####################################################################")
             if event.axis == 0:
                 inputs[2]["thumbsticks"]["lx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
-            if event.axis == 1:
+            elif event.axis == 1:
                 inputs[2]["thumbsticks"]["ly"] = -event.value if(abs(event.value) > minActivation) else 0.0  # for some reason the y's are inverted... negative is up, idk
                 #print(event.value)
-            if event.axis == 3:
+            elif event.axis == 3:
                 inputs[2]["thumbsticks"]["rx"] = event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
-            if event.axis == 4:
+            elif event.axis == 4:
                 inputs[2]["thumbsticks"]["ry"] = -event.value if(abs(event.value) > minActivation) else 0.0
                 #print(event.value)
+
+            # TRIGGERS
+            elif event.axis == 2:
+                inputs[2]["triggers"]["lt"] = event.value
+            elif event.axis == 5:
+                inputs[2]["triggers"]["rt"] = event.value
             
-        if event.type == pygame.JOYHATMOTION:
+        elif event.type == pygame.JOYHATMOTION:
             inputs[2]["hat"] = event.value
-            
+
+        elif event.type == pygame.JOYBUTTONDOWN:
+            inputs[2]["buttons"][event.button] = not inputs[2]["buttons"][event.button]
+            #print(inputs[2]["buttons"])
+        
+        # I don't think there's ever a case where it *doesn't* need to toggle
+        # elif event.type == pygame.JOYBUTTONUP:
+        #     inputs[2]["buttons"][event.button] = 0
     
     return inputs
 
