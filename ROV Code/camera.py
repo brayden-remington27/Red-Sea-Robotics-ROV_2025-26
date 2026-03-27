@@ -47,6 +47,8 @@ def addCamera(name, source, size):
         cmd.insert(5, "-flags")
         cmd.insert(6, "low_delay")
 
+    print(f"Adding camera {name}")
+
     # creates the pipe (terminal window basically) with its own stdout, stdin and stderr running the generated command for the input camera
     pipe = subprocess.Popen(
         cmd,
@@ -91,7 +93,7 @@ def _cameraReader(name):
         cam["latest"] = raw  # update the frame with the new data
         sensors.flags["cameraConnect"] = True  # flag that a camera is sending data
     
-    print("Quitting Camera", name, "\'s thread")
+    print(f"Quitting Camera{name}\'s thread")
 
 
 def getSurface(name, scaledDimensions: tuple = None):

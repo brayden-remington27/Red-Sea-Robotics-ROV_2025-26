@@ -1,13 +1,16 @@
 # Just functions that don't apply to any file specifically. I didn't want to make this file, maybe I'll figure out a way to get rid of it later.
 
-def inToOutPercent(axes: dict, max_scale = 0.8):
+def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
+    #TODO: This is a bit of a duplicate of the PINS dict in outputs.py, find some way to integrate together
     out = {
         "LEFT": 0.0,
         "RIGHT": 0.0,
         "SW": 0.0,
         "SE": 0.0,
         "NW": 0.0,
-        "NE": 0.0
+        "NE": 0.0,
+        "ARM": 0.0,
+        "CAMERA": 0.0
     }
     
     #AXIS:
@@ -36,7 +39,6 @@ def inToOutPercent(axes: dict, max_scale = 0.8):
     out["RIGHT"] *= max_scale
     
     
-    #TODO: do the rest of the motors
     ###### UP/DOWN ######
     
     # applies to all up/down motors ot just move up and down as ry says
@@ -44,9 +46,21 @@ def inToOutPercent(axes: dict, max_scale = 0.8):
     out["SE"] = profile*max_scale
     out["NW"] = profile*max_scale
     out["NE"] = profile*max_scale
+
+   #TODO: add strafing
+
+
+    ###### CAMERA SERVO ######
+    
+    #TODO: for some reason only going to a specific location and staying there, not continuous motion
+    if abs(out["CAMERA"]) < 1:
+        out["CAMERA"] += hat[0]*0.8
+    else:
+        out["CAMERA"] = 0.99
+
     
     return out
 
-
+#TODO: Unused currently
 def remap(x, smin, smax, fmin, fmax):  # takes in a value and the values it ranges between, outputs that value along a different range
     return fmin + ((x - smin) * (fmax - fmin) / (smax - smin))

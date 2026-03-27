@@ -17,8 +17,9 @@ def percentToPWM(p, clamp: float):  # turns the percent value to a 1100–1900 c
 
 
 def init(config, raspi: pigpio.pi):
-
     global pi
+    pi = raspi
+
     global PINS
     # Map logical motor names used by control.py to config pin settings
     PINS = {
@@ -34,8 +35,8 @@ def init(config, raspi: pigpio.pi):
         "SE": config.getint("THRUSTERS", "SE", fallback=20),
 
         # other devices
-        "ARM_PIN": config.getint("GENERAL", "ARM_PIN", fallback=13),
-        "CAMERA_PIN": config.getint("GENERAL", "CAMERA_PIN", fallback=25)
+        "ARM": config.getint("GENERAL", "ARM", fallback=13),
+        "CAMERA": config.getint("GENERAL", "CAMERA", fallback=25)  # camera servo
     }
     global MAX_PW, MIN_PW, MID_PW
     MAX_PW = config.getint("PWM", "MAX_PW", fallback=1900)
@@ -43,14 +44,7 @@ def init(config, raspi: pigpio.pi):
     MID_PW = config.getint("PWM", "MID_PW", fallback=1500)
 
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
-
-    #print(config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local'))
     
-    
-    pi = raspi
-    
-    # this one ends up making a bunch of problems
-    #assert pi.connected, "pigpio not connected"   # local pigpiod  
     
     if not pi.connected: raise RuntimeError("pigpio Not Connected")
 
@@ -76,7 +70,7 @@ def sendActivations(percents: dict, clamp: float):
         return  # make sure, if there isn't a pi don't try to send
 
     for name, percent in percents.items():
-        key = name if name in PINS else name.upper()
+        key = name if name in PINS else name.upper()  # the key that will be sought by the declaration of the pin is the name given by the dict of percents, uppercase if not there naturally
         if key not in PINS:
             continue
 

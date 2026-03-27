@@ -38,10 +38,12 @@ def init(config):
     
     CAM1WIDTH = config.getint("CAMERA1", "WIDTH", fallback=854)
     CAM1HEIGHT = config.getint("CAMERA1", "HEIGHT", fallback=480)
+    global CAM_MOVE_SPEED
+    CAM_MOVE_SPEED = config.getfloat("CONFIG", "CAMERA_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
     
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
 
-    LEAK_PIN = config.getint("GENERAL", "LEAK_PIN", fallback=5)
+    LEAK = config.getint("GENERAL", "LEAK", fallback=5)
 
     ########################################################################################
     pi = pigpio.pi(PI_IP)
@@ -59,7 +61,7 @@ def init(config):
     # TODO: Make sure that the ROV, controllers, etc can be disconnected and reconnected while the program is running without crashing it
     outputs.init(config, pi)
     inputs.init(MIN_ACTIVATION, True)
-    sensors.init(LEAK_PIN, pi)
+    sensors.init(LEAK, pi)
 
 
 
@@ -78,7 +80,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["thumbsticks"], MAX_PERCENT)
+        activations = utils.inToOutPercent(ins["hat"], ins["thumbsticks"], MAX_PERCENT, CAM_MOVE_SPEED)
         
         
         displayData = {
