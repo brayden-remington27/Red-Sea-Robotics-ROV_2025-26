@@ -28,6 +28,8 @@ def init(config):
 
     UPDATE_RATE = config.getint("CONFIG", "UPDATE_RATE", fallback=60)
     MIN_ACTIVATION = config.getfloat("CONFIG", "MIN_ACTIVATION", fallback=0.10)
+    global MAX_PERCENT
+    MAX_PERCENT = config.getfloat("CONFIG", "MAX_PERCENT", fallback=0.8)
     
     WIDTH = config.getint("SCREEN", "WIDTH", fallback=600)
     HEIGHT = config.getint("SCREEN", "HEIGHT", fallback=890)
@@ -68,11 +70,15 @@ def loop():
     running = True
     while running:  # Start control loop
         
+        ## SENSORS ##
+        
+        sensors.update()  # checks the sensors like leak and temp and set internal vars to it
+        
         ###### EXTRACT INPUTS ######
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.sticks_to_percents(ins["thumbsticks"], 0.8)
+        activations = utils.sticks_to_percents(ins["thumbsticks"], MAX_PERCENT)
         
         
         displayData = {
@@ -89,7 +95,7 @@ def loop():
         
         ###### OUTPUTS ######
         
-        outputs.sendActivations(activations)
+        outputs.sendActivations(activations, MAX_PERCENT)
         
         ###### CAMERA ######
         
