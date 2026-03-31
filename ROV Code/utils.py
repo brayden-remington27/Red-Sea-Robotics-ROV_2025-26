@@ -1,6 +1,5 @@
-# Just functions that don't apply to any file specifically. I didn't want to make this file, maybe I'll figure out a way to get rid of it later.
-
-def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
+def init():
+    global out
     #TODO: This is a bit of a duplicate of the PINS dict in outputs.py, find some way to integrate together
     out = {
         "LEFT": 0.0,
@@ -12,6 +11,11 @@ def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
         "ARM": 0.0,
         "CAMERA": 0.0
     }
+
+
+
+
+def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
     
     #AXIS:
     #   "lx": _
@@ -53,10 +57,10 @@ def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
     ###### CAMERA SERVO ######
     
     #TODO: for some reason only going to a specific location and staying there, not continuous motion
-    if abs(out["CAMERA"]) < 1:
-        out["CAMERA"] += hat[0]*0.8
+    if abs(out["CAMERA"]) <= max_scale:
+        out["CAMERA"] += hat[0]*cam_speed
     else:
-        out["CAMERA"] = 0.99
+        out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*max_scale  #  +-0.99
 
     
     return out

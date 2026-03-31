@@ -47,6 +47,8 @@ def init(config):
 
     ########################################################################################
     pi = pigpio.pi(PI_IP)
+    print(PI_IP)
+    print(pi.connected)
     
     camera.init(PI_IP)
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
@@ -62,6 +64,8 @@ def init(config):
     outputs.init(config, pi)
     inputs.init(MIN_ACTIVATION, True)
     sensors.init(LEAK, pi)
+
+    utils.init()  # TODO: rename this script, its no longer a utils its more of a io bridge or smth
 
 
 
