@@ -54,8 +54,8 @@ def init(config):
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer
 
     # usbcam/cam, usbcam is main camera, cam is down/backup camera
-    camera.addCamera("main", f"rtsp://{PI_IP}:8554/usbcam", (1280, 720))  # this is for a rtsp data transfer, change port and stuff if needed
-    camera.addCamera("backup", f"rtsp://{PI_IP}:8554/cam", (1280, 720))
+    camera.addCamera("main", f"rtsp://{PI_IP}:8554/maincam", (1280, 720))  # this is for a rtsp data transfer, change port and stuff if needed
+    #camera.addCamera("backup", f"rtsp://{PI_IP}:8554/cam", (1280, 720))
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
@@ -110,7 +110,7 @@ def loop():
         ###### DRAW ######
         
         # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
-        camera_surface = camera.getSurface("main" if not ins["buttons"][6] else "backup", (854, 480))
+        camera_surface = pygame.transform.rotate(camera.getSurface("main", (854, 480)), 90)  # if not ins["buttons"][6] else "backup"
         draw.update(displayData, camera_surface)
         # print camera status once; details are in draw
         #print(f"camera_surface={camera_surface}")

@@ -56,9 +56,8 @@ def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
 
     ###### CAMERA SERVO ######
     
-    #TODO: for some reason only going to a specific location and staying there, not continuous motion
     if abs(out["CAMERA"]) <= max_scale:
-        out["CAMERA"] += hat[0]*cam_speed
+        out["CAMERA"] += hat[1]*cam_speed
     else:
         out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*max_scale  #  +-0.99
 
