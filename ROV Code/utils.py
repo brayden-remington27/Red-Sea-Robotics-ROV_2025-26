@@ -15,13 +15,20 @@ def init():
 
 
 
-def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
+def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam_speed: float, arm_speed: float):
+    #HAT:
+    #    (±_, ±_)
     
     #AXIS:
-    #   "lx": _
-    #   "ly": _
-    #   "rx": _
-    #   "ry": _
+    #   "lx": ±_
+    #   "ly": ±_
+    #   "rx": ±_
+    #   "ry": ±_
+    
+    #TRIGGERS:
+    #    "lt": +_
+    #    "rt": +_
+    
     
     move = axes["ly"]
     turn = axes["rx"]
@@ -55,11 +62,21 @@ def inToOutPercent(hat: tuple, axes: dict, max_scale: float, cam_speed: float):
 
 
     ###### CAMERA SERVO ######
+    # servo works at absolute positioning, pwm input = the amount here or there it's set to
     
-    if abs(out["CAMERA"]) <= max_scale:
+    if abs(out["CAMERA"]) <= 1:  # I changed max_scale for 1, cuz the servo isn't a burnout worry
         out["CAMERA"] += hat[1]*cam_speed
     else:
-        out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*max_scale  #  +-0.99
+        out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*1  #  ±0.99
+    
+    
+    ###### ARM ######
+    # the arm works as constant velocity, the pwm input is how fast it opens or closes
+    
+    if abs(out["ARM"]) <= 1:
+        # closes below 1470 µs
+        # opens above 1530 µs
+        out["ARM"] = triggers["lt"]-triggers["rt"]
 
     
     return out

@@ -39,7 +39,9 @@ def init(config):
     CAM1WIDTH = config.getint("CAMERA1", "WIDTH", fallback=854)
     CAM1HEIGHT = config.getint("CAMERA1", "HEIGHT", fallback=480)
     global CAM_MOVE_SPEED
+    global ARM_MOVE_SPEED
     CAM_MOVE_SPEED = config.getfloat("CONFIG", "CAMERA_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
+    ARM_MOVE_SPEED = config.getfloat("CONFIG", "ARM_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
     
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
 
@@ -84,7 +86,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["hat"], ins["thumbsticks"], MAX_PERCENT, CAM_MOVE_SPEED)
+        activations = utils.inToOutPercent(ins["hat"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT, CAM_MOVE_SPEED, ARM_MOVE_SPEED)
         
         
         displayData = {
