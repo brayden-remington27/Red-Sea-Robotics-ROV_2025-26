@@ -1,7 +1,7 @@
 import pigpio
 import time
 
-PIN = 19
+PIN = 13
 
 NEUTRAL = 1500
 MIN = 1100
@@ -10,7 +10,7 @@ MAX = 1900
 def percent_to_pw(p):
     return int(NEUTRAL + p * (MAX - NEUTRAL))
 
-pi = pigpio.pi('10.42.0.187')
+pi = pigpio.pi('10.42.0.186')
 assert pi.connected, "pigpio not connected"   # local pigpiod
 
 if not pi.connected:
@@ -24,8 +24,8 @@ time.sleep(3)   # IMPORTANT
 sequence = [
     0.0,   # off
     0.2,   # 20%
-    0.8,   # 80%
-    0.4,   # 40%
+    0.4,   # 80%
+    -0.4,   # 40%
     0.0    # off
 ]
 

@@ -102,6 +102,8 @@ def loop():
         }
         
         ###### OUTPUTS ######
+
+        #print(activations)
         
         outputs.sendActivations(activations, MAX_PERCENT)
         
@@ -112,7 +114,7 @@ def loop():
         ###### DRAW ######
         
         # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
-        camera_surface = pygame.transform.rotate(camera.getSurface("main", (854, 480)), 90)  # if not ins["buttons"][6] else "backup"
+        camera_surface = pygame.transform.rotate(camera.getSurface("main", (918, 648)), -90)  # if not ins["buttons"][6] else "backup"
         draw.update(displayData, camera_surface)
         # print camera status once; details are in draw
         #print(f"camera_surface={camera_surface}")

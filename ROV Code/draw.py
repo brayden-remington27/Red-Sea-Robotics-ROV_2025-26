@@ -82,12 +82,12 @@ def update(data: dict, cameraDisplay):
     
     # Print Camera Text
     printer.reset()
-    printer.x = 875
+    printer.x = 900
     printer.tprint(window, "CAMERA:")
     
     # Bring camera1Display from the camera.py to control.py update, and fed to draw.py as cameraDisplay
     if cameraDisplay:  # this is checking that the frame is full from the stream and can print nicely. if it wasn't, it will return none and won't blit
-        window.blit(cameraDisplay, (500, 65))
+        window.blit(cameraDisplay, (700, 65))
     
     pygame.display.flip()
 

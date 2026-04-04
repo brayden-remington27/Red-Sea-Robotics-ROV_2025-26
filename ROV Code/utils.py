@@ -65,7 +65,7 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
     # servo works at absolute positioning, pwm input = the amount here or there it's set to
     
     if abs(out["CAMERA"]) <= 1:  # I changed max_scale for 1, cuz the servo isn't a burnout worry
-        out["CAMERA"] += hat[1]*cam_speed
+        out["CAMERA"] += -hat[1]*cam_speed
     else:
         out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*1  #  ±0.99
     
@@ -76,7 +76,9 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
     if abs(out["ARM"]) <= 1:
         # closes below 1470 µs
         # opens above 1530 µs
-        out["ARM"] = triggers["lt"]-triggers["rt"]
+        out["ARM"] = (triggers["lt"]-triggers["rt"])*arm_speed
+    else:
+        out["ARM"] = (out["ARM"]/abs(out["ARM"]))*1
 
     
     return out

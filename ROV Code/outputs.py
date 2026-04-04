@@ -75,7 +75,9 @@ def sendActivations(percents: dict, clamp: float):
             continue
 
         pin = PINS[key]
-        pwm = percentToPWM(percent, clamp)  # final clamping to ensure nothing is beyond 80%
+        pwm = percentToPWM(percent, 1)
+        if name[0] == 'L' or name[0] == 'R' or name[0] == 'N' or name[0] == 'S':
+            pwm = percentToPWM(percent, clamp)  # final clamping to ensure nothing is beyond 80%
         pi.set_servo_pulsewidth(pin, pwm)
 
 
