@@ -86,7 +86,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["hat"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT, CAM_MOVE_SPEED, ARM_MOVE_SPEED)
+        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT, CAM_MOVE_SPEED, ARM_MOVE_SPEED)
         
         
         displayData = {
