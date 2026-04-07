@@ -51,6 +51,12 @@ float getDepth(){
   return sensor.depth();
 }
 
+float getTemp(){
+  sensor.read();
+
+  return sensor.temperature();
+}
+
 //necesary steps given volume & steps per ml of stepper motor
 float stepsReq(float vol){
   //volume to be displaced = required steps/steps per ml
