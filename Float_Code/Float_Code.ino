@@ -2,7 +2,7 @@
 #include "MS5837.h"
 
 MS5837 sensor;
-int stepsPerML = 0;
+float stepsPerML = 13.5;
 float[2][10] itenerary = [[0.4, 10], [2.5, 30], [0.4, 30], [2.5, 30], [0.4, 30]]
 float DISPLACEMENT;  // volume of the float
 float VOLUME; // volume of the syringes
@@ -60,7 +60,7 @@ float getTemp(){
 //necesary steps given volume & steps per ml of stepper motor
 float stepsReq(float vol){
   //volume to be displaced = required steps/steps per ml
-  return vol * stepsPerML;
+  return (int)vol * stepsPerML;
   
 }
 
@@ -71,7 +71,6 @@ float volDisp(float targetDepth){
     return 0.5*diffDepth;
 }
 
-float volDisp
 void loop() {
   // put your main code here, to run repeatedly:
   float pressure_mbar = getPressure();
