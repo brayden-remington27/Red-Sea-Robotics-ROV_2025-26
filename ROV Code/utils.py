@@ -1,4 +1,18 @@
-def init():
+def init(config):
+    global MAX_PERCENT
+    MAX_PERCENT = config.getfloat("CONFIG", "MAX_PERCENT", fallback=0.8)
+    global BUMP_SPEED
+    BUMP_SPEED = config.getfloat("CONFIG", "BUMP_SPEED", fallback=0.07)
+    
+    global CAM_SPEED
+    global ARM_SPEED
+    CAM_SPEED = config.getfloat("CONFIG", "CAMERA_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
+    ARM_SPEED = config.getfloat("CONFIG", "ARM_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
+    
+    global RAMP_SPEED
+    RAMP_SPEED = config.getfloat("CONFIG", "OUTPUT_RAMP_SPEED", fallback=0.01)
+    
+
     global out
     #TODO: This is a bit of a duplicate of the PINS dict in outputs.py, find some way to integrate together
     out = {
@@ -11,11 +25,20 @@ def init():
         "ARM": 0.0,
         "CAMERA": 0.0
     }
+    
 
 
+# make sure that the motors don't max out too quickly, otherwise everyting crashes
+def ramp_toward(current: float, target: float, max_delta: float) -> float:
+    if target > current:
+        return min(current + max_delta, target)
+    if target < current:
+        return max(current - max_delta, target)
+    return current
 
 
-def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, max_scale: float, cam_speed: float, arm_speed: float):
+# TODO: Maybe move all these variables to the init? some might change like max scale with different movement modes, but others wouldn't and could go to init
+def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict):
     #HAT:
     #    (±_, ±_)
     
@@ -37,37 +60,55 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, max_sc
     ###### FRONTS ######
     
     # default tank tread movement, range from -2 to 2
-    out["LEFT"] = move - turn
-    out["RIGHT"] = move + turn
+    targetLeft = move - turn
+    targetRight = move + turn
     
     # normalize defaults, -1 to 1
-    max_mag = max(1.0, abs(out["LEFT"]), abs(out["RIGHT"]))
-    out["LEFT"] /= max_mag
-    out["RIGHT"] /= max_mag
+    max_mag = max(1.0, abs(targetLeft), abs(targetRight))
+    targetLeft /= max_mag  # these "target" values are just what it wants to set it to with no ramping, but...
+    targetRight /= max_mag
     
     # scale to not burn out buck
-    out["LEFT"] *= -max_scale
-    out["RIGHT"] *= max_scale
+    targetLeft *= -MAX_PERCENT
+    targetRight *= MAX_PERCENT
+    
+    out["LEFT"] = ramp_toward(out["LEFT"], targetLeft, RAMP_SPEED)  # ... it gets ramped here to make sure it doesnt' crash
+    out["RIGHT"] = ramp_toward(out["RIGHT"], targetRight, RAMP_SPEED)
     
     
     ###### UP/DOWN ######
     
     # applies to all up/down motors ot just move up and down as ry says
-    out["SW"] = profile*max_scale
-    out["SE"] = -profile*max_scale
-    out["NW"] = -profile*max_scale
-    out["NE"] = profile*max_scale
+    targetSW = profile*MAX_PERCENT
+    targetSE = -profile*MAX_PERCENT
+    targetNW = -profile*MAX_PERCENT
+    targetNE = profile*MAX_PERCENT
+    
+    out["SW"] = ramp_toward(out["SW"], targetSW, RAMP_SPEED)
+    out["SE"] = ramp_toward(out["SE"], targetSE, RAMP_SPEED)
+    out["NW"] = ramp_toward(out["NW"], targetNW, RAMP_SPEED)
+    out["NE"] = ramp_toward(out["NE"], targetNE, RAMP_SPEED)
 
    #TODO: add strafing
+   #TODO: I added small bumps to the sides, as I don't have an IMU for strafing stabilization and shit
 
-    out["SW"] +=
+    # Bumps a little bit more to the motors sides when the hat is pressed
+    if hat[0] == -1 or hat[1] == -1:
+        out["SW"] = min(out["SW"]+BUMP_SPEED, MAX_PERCENT)
+    if hat[0] == 1 or hat[1] == -1:
+        out["SE"] = min(out["SE"]+BUMP_SPEED, MAX_PERCENT)
+    if hat[0] == -1 or hat[1] == 1:
+        out["NW"] = min(out["NW"]+BUMP_SPEED, MAX_PERCENT)
+    if hat[0] == 1 or hat[1] == 1:
+        out["NE"] = min(out["NE"]+BUMP_SPEED, MAX_PERCENT)
+            
 
     ###### CAMERA SERVO ######
     # servo works at absolute positioning, pwm input = the amount here or there it's set to
     
-    if abs(out["CAMERA"]) <= 1:  # I changed max_scale for 1, cuz the servo isn't a burnout worry
-        out["CAMERA"] += buttons[4]*cam_speed
-        out["CAMERA"] -= buttons[5]*cam_speed
+    if abs(out["CAMERA"]) <= 1:  # I changed MAX_PERCENT for 1, cuz the servo isn't a burnout worry
+        out["CAMERA"] += buttons[4]*CAM_SPEED
+        out["CAMERA"] -= buttons[5]*CAM_SPEED
     else:
         out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*1  #  ±0.99
     
@@ -78,12 +119,20 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, max_sc
     if abs(out["ARM"]) <= 1:
         # closes below 1470 µs
         # opens above 1530 µs
-        out["ARM"] = (triggers["lt"]-triggers["rt"])*arm_speed
+        out["ARM"] = (triggers["lt"]-triggers["rt"])*ARM_SPEED
     else:
         out["ARM"] = (out["ARM"]/abs(out["ARM"]))*1
 
     
+    
+    
     return out
+
+
+
+
+
+
 
 #TODO: Unused currently
 def remap(x, smin, smax, fmin, fmax):  # takes in a value and the values it ranges between, outputs that value along a different range

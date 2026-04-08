@@ -101,12 +101,9 @@ def getInputs() -> list:
             inputs[2]["hat"] = event.value
 
         elif event.type == pygame.JOYBUTTONDOWN:
-            inputs[2]["buttons"][event.button] = not inputs[2]["buttons"][event.button]
-            #print(inputs[2]["buttons"])
-        
-        # I don't think there's ever a case where it *doesn't* need to toggle
-        # elif event.type == pygame.JOYBUTTONUP:
-        #     inputs[2]["buttons"][event.button] = 0
+            inputs[2]["buttons"][event.button] = 1
+        elif event.type == pygame.JOYBUTTONUP:
+            inputs[2]["buttons"][event.button] = 0
     
     return inputs
 

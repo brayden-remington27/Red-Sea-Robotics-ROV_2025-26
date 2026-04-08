@@ -61,7 +61,7 @@ def update(data: dict, cameraDisplay):
     
     printer.tprint(window, "SETTINGS:")  # Controller settings: movement mode (stabilized, stationary, free, cancel rot), 
     printer.indent()
-    printer.print(window, f"Movement Activaion Modifier: {data["settings"][3]}")  # data["settings"] is the same as displayData["settings"], which gets data from input.values["toggles"]
+    printer.print(window, f"Movement Activaion Modifier: 0") # {data["settings"][3]}")  # data["settings"] is the same as displayData["settings"], which gets data from input.values["toggles"]
     printer.outdent()
     printer.print(window, "")
     printer.print(window, "")

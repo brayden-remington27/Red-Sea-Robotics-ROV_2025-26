@@ -28,8 +28,6 @@ def init(config):
 
     UPDATE_RATE = config.getint("CONFIG", "UPDATE_RATE", fallback=60)
     MIN_ACTIVATION = config.getfloat("CONFIG", "MIN_ACTIVATION", fallback=0.10)
-    global MAX_PERCENT
-    MAX_PERCENT = config.getfloat("CONFIG", "MAX_PERCENT", fallback=0.8)
     
     WIDTH = config.getint("SCREEN", "WIDTH", fallback=600)
     HEIGHT = config.getint("SCREEN", "HEIGHT", fallback=890)
@@ -38,10 +36,6 @@ def init(config):
     
     CAM1WIDTH = config.getint("CAMERA1", "WIDTH", fallback=854)
     CAM1HEIGHT = config.getint("CAMERA1", "HEIGHT", fallback=480)
-    global CAM_MOVE_SPEED
-    global ARM_MOVE_SPEED
-    CAM_MOVE_SPEED = config.getfloat("CONFIG", "CAMERA_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
-    ARM_MOVE_SPEED = config.getfloat("CONFIG", "ARM_MOVE_SPEED", fallback=0.001)  # 0.1% per loop
     
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
 
@@ -67,7 +61,7 @@ def init(config):
     inputs.init(MIN_ACTIVATION, True)
     sensors.init(LEAK, pi)
 
-    utils.init()  # TODO: rename this script, its no longer a utils its more of a io bridge or smth
+    utils.init(config)  # TODO: rename this script, its no longer a utils its more of a io bridge or smth
 
 
 
@@ -86,7 +80,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT, CAM_MOVE_SPEED, ARM_MOVE_SPEED)
+        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"])
         
         
         displayData = {
@@ -114,7 +108,7 @@ def loop():
         ###### DRAW ######
         
         # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
-        camera_surface = pygame.transform.rotate(camera.getSurface("main", (918, 648)), -90)  # if not ins["buttons"][6] else "backup"
+        camera_surface = pygame.transform.rotate(camera.getSurface("main", (918, 648)), -90)  # if not ins["buttons"][6] else "backup"  #TODO: No longer toggle, add toggle for this case
         draw.update(displayData, camera_surface)
         # print camera status once; details are in draw
         #print(f"camera_surface={camera_surface}")
