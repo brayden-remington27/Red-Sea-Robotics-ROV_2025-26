@@ -2,6 +2,11 @@
 #include "MS5837.h"
 
 MS5837 sensor;
+float stepsPerML = 13.5;
+float[2][10] itenerary = [[0.4, 10], [2.5, 30], [0.4, 30], [2.5, 30], [0.4, 30]]
+float DISPLACEMENT;  // volume of the float
+float VOLUME; // volume of the syringes
+float MASS; // of the float
 //function for getting pressure - check
 //function for taking pressure and estimating depth given temp and salinity
 //function for taking necesary volume displacement given steps per ml of stepper motor (steps are global var)
@@ -46,15 +51,31 @@ float getPressure(){
   return sensor.pressure();
 }
 
-//calculates accurate fluid density
-float calcDensity(){
+//calculates depth
+float getDepth(){
+  sensor.read();
 
+  return sensor.depth();
 }
 
-float steps = 0; //def later
-float volDisp(float stepsReq){
+float getTemp(){
+  sensor.read();
+
+  return sensor.temperature();
+}
+
+//necesary steps given volume & steps per ml of stepper motor
+float stepsReq(float vol){
   //volume to be displaced = required steps/steps per ml
-  return stepsReq/steps;
+  return (int)vol * stepsPerML;
+  
+}
+
+float volDisp(float targetDepth){
+    float depth_m = getDepth();
+    float diffDepth = targetDepth - depth_m;
+    
+    return 0.5*diffDepth;
 }
 
 void loop() {
