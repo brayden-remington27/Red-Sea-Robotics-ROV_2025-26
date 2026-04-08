@@ -15,7 +15,7 @@ def init():
 
 
 
-def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam_speed: float, arm_speed: float):
+def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, max_scale: float, cam_speed: float, arm_speed: float):
     #HAT:
     #    (±_, ±_)
     
@@ -60,12 +60,14 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
 
    #TODO: add strafing
 
+    out["SW"] +=
 
     ###### CAMERA SERVO ######
     # servo works at absolute positioning, pwm input = the amount here or there it's set to
     
     if abs(out["CAMERA"]) <= 1:  # I changed max_scale for 1, cuz the servo isn't a burnout worry
-        out["CAMERA"] += -hat[1]*cam_speed
+        out["CAMERA"] += buttons[4]*cam_speed
+        out["CAMERA"] -= buttons[5]*cam_speed
     else:
         out["CAMERA"] = (out["CAMERA"]/abs(out["CAMERA"]))*1  #  ±0.99
     
