@@ -37,8 +37,8 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
     ###### FRONTS ######
     
     # default tank tread movement, range from -2 to 2
-    out["LEFT"] = move + turn
-    out["RIGHT"] = move - turn
+    out["LEFT"] = move - turn
+    out["RIGHT"] = move + turn
     
     # normalize defaults, -1 to 1
     max_mag = max(1.0, abs(out["LEFT"]), abs(out["RIGHT"]))
@@ -46,7 +46,7 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
     out["RIGHT"] /= max_mag
     
     # scale to not burn out buck
-    out["LEFT"] *= max_scale
+    out["LEFT"] *= -max_scale
     out["RIGHT"] *= max_scale
     
     
@@ -54,8 +54,8 @@ def inToOutPercent(hat: tuple, axes: dict, triggers: dict, max_scale: float, cam
     
     # applies to all up/down motors ot just move up and down as ry says
     out["SW"] = profile*max_scale
-    out["SE"] = profile*max_scale
-    out["NW"] = profile*max_scale
+    out["SE"] = -profile*max_scale
+    out["NW"] = -profile*max_scale
     out["NE"] = profile*max_scale
 
    #TODO: add strafing
