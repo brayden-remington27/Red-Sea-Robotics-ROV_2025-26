@@ -6,6 +6,13 @@ MS5837 sensor;
 //function for taking pressure and estimating depth given temp and salinity
 //function for taking necesary volume displacement given steps per ml of stepper motor (steps are global var)
 //function for taking current difference in depth to target depth --> return volume of syringes that need to be displaced given global var about float (mass,max disp)
+
+float[2][10] itenerary = [[0.4, 10], [2.5, 30], [0.4, 30], [2.5, 30], [0.4, 30]]
+float DISPLACEMENT;  // volume of the float
+float VOLUME; // volume of the syringes
+float MASS; // of the float
+int steps per ml
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600)
