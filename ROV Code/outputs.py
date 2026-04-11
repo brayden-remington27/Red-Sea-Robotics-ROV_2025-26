@@ -43,6 +43,9 @@ def init(config, raspi: pigpio.pi):
     MIN_PW = config.getint("PWM", "MIN_PW", fallback=1100)
     MID_PW = config.getint("PWM", "MID_PW", fallback=1500)
 
+    global MAX_PERCENT
+    MAX_PERCENT = config.getfloat("CONFIG", "MAX_PERCENT", fallback=0.8)
+
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
     
     
@@ -63,7 +66,7 @@ def init(config, raspi: pigpio.pi):
 
 
 
-def sendActivations(percents: dict, clamp: float):
+def sendActivations(percents: dict):
     #print(percents)
 
     if pi is None:
@@ -77,7 +80,7 @@ def sendActivations(percents: dict, clamp: float):
         pin = PINS[key]
         pwm = percentToPWM(percent, 1)
         if name[0] == 'L' or name[0] == 'R' or name[0] == 'N' or name[0] == 'S':
-            pwm = percentToPWM(percent, clamp)  # final clamping to ensure nothing is beyond 80%
+            pwm = percentToPWM(percent, MAX_PERCENT)  # final clamping to ensure nothing is beyond 80%
         pi.set_servo_pulsewidth(pin, pwm)
 
 

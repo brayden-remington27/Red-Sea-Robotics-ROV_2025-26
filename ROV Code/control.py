@@ -99,7 +99,7 @@ def loop():
 
         #print(activations)
         
-        outputs.sendActivations(activations, MAX_PERCENT)
+        outputs.sendActivations(activations)
         
         ###### CAMERA ######
         
