@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(9600);
 }
 void loop() {
-  digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+  digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction UP
   // Makes 200 pulses for making one full cycle rotation
   for(int x = 0; x < 800; x++) {
     digitalWrite(stepPin,HIGH); 
@@ -27,7 +27,7 @@ void loop() {
   Serial.println("Looped fore");
   delay(1000); // One second delay
   
-  digitalWrite(dirPin,LOW); //Changes the rotations direction
+  digitalWrite(dirPin,LOW); //Changes the rotations direction DOWN
   // Makes 400 pulses for making two full cycle rotation
   for(int x = 0; x < 800; x++) {
     digitalWrite(stepPin,HIGH);
