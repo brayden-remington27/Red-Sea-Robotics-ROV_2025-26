@@ -4,11 +4,28 @@
 
 MS5837 sensor;
 float stepsPerML = 13.5;
-float[2][5] itenerary = [[0.4, 10], [2.5, 30], [0.4, 30], [2.5, 30], [0.4, 30]]; //[depth, duration] (depth in meters, duration in seconds)
+float itinerary[5][2] = { //fixed this array
+  {0.4, 10},
+  {2.5, 30},
+  {0.4, 30},
+  {2.5, 30},
+  {0.4, 30}
+}; //[depth, duration] (depth in meters, duration in seconds)
 float DISPLACEMENT;  // volume of the float
 float VOLUME; // volume of the syringes
 float MASS; // of the float
 int MODE = 0;
+
+float currentDepth = 0;
+float prevDepth = 0; 
+
+float currentVelocity = 0;
+float prevVelocity = 0;
+int targetItinerary = 0;
+
+unsigned long previousMillis = 0;
+const long interval = 100; // timestep in milliseconds (eg 10hz)
+
 unsigned long startMillis;
 //function for getting pressure - check
 //function for taking pressure and estimating depth given temp and salinity
@@ -16,9 +33,8 @@ unsigned long startMillis;
 //function for taking current difference in depth to target depth --> return volume of syringes that need to be displaced given global var about float (mass,max disp)
 
 void setup() {
-  startMillis = millis();
   // put your setup code here, to run once:
-  Serial.begin(9600)
+  Serial.begin(9600);
  
   delay(1000);
 
@@ -39,6 +55,8 @@ void setup() {
   // sensor.setModel(MS5837::MS5803_14BA);
   
   sensor.setFluidDensity(997); // fresh water
+
+  startMillis = millis(); 
 
   Serial.println("Sensor initialized!");
 }
@@ -76,48 +94,54 @@ float volDisp(float targetDepth){
     return 0.5*diffDepth;
 }
 
-unsigned long previousMillis = 0;
-const long interval = 100; // timestep in milliseconds (eg 10hz)
 
-float currentDepth;
-float prevDepth; 
-float currentVelocity;
-float prevVelocity;
-int targetItinerary;
 void loop() {
   // put your main code here, to run repeatedly:
   unsigned long currentMillis = millis();
-  unsigned long timeElapsed = (startMillis - currentMillis)
-  if (currentMillies - previousMillies >=interval)
-  {
+  //this is just reformatted with chatgpt, code is same I just wanted to make sure everything is in the right place
+   if (currentMillis - previousMillis >= interval) {
     previousMillis = currentMillis;
-    currentDepth = getDepth();
-    currentVelocity = (currentDepth - prevDepth)/interval;
 
+    // Read sensor once
+    sensor.read();
+    currentDepth = sensor.depth();
 
-    if (mode == 0){
+    currentVelocity = (currentDepth - prevDepth) / (interval / 1000.0);
+
+    float targetDepth = itinerary[targetItinerary][0];
+    float targetTime = itinerary[targetItinerary][1];
+
+    unsigned long timeElapsed = currentMillis - startMillis;
+
+    Serial.print("Depth: ");
+    Serial.print(currentDepth);
+    Serial.print(" | Target: ");
+    Serial.println(targetDepth);
+    
+    if (MODE == 0){
       //have stabalise position using depth below or above adjust depth
       //if its below or belowand speed is in the target direction dont move plunger
       // if not in target depth and speed is not in right direction, move plunger in the right direction
       // if timer is up mode = 1
         // timer: if starttime-currenttime == itinerar[target][1]*1000
         // starttime = current time
-      
-      unsigned long timer = timeElapsed;
-      if (timer == intenerary[targetItenerary][1]*1000){
-        startMillis = currentMillis;
-        targetItenerary ++;
-        mode = 1;
-        if(currentDepth < intenerary[targetItenerary][1]){
-          if(currentVelocity == targetVelocity){
-            // dont move plunger
-          }
-          else if(currentVelocity >= targetVelocity)
-          // or <= targetVelocity?
-        }
-      }
+        // Simple proportional control
+      float volume = volDisp(targetDepth); // volume of syringes (?)
+      float steps = stepsReq(volume); //steps needed to move syringe
 
-    } else if (mode == 1) {
+      if (timer == itinerary[targetItenerary][1]*1000){
+        startMillis = currentMillis;
+        targetItinerary ++;
+        if (timeElapsed >= targetTime * 1000) {
+        startMillis = currentMillis;
+        targetItinerary++;
+
+          if (targetItinerary >= 5) {
+            targetItinerary = 0; //loops back to start
+          }
+          MODE = 1;
+      }
+    } else if (MODE == 1) {
       //if depth = targetdepth of current intirerayy pos change mode to stay
       if (currentDepth == targetDepth){
         mode = 0;
