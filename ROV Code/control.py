@@ -43,8 +43,7 @@ def init(config):
 
     ########################################################################################
     pi = pigpio.pi(PI_IP)
-    print(PI_IP)
-    print(pi.connected)
+    print("PI Connected:", pi.connected, "@", PI_IP)
     
     camera.init(PI_IP)
     #camera.addCamera(0, CAM1WIDTH, CAM1HEIGHT)  # main local camera of the computer

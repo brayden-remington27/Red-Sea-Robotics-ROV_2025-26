@@ -38,7 +38,9 @@ def ramp_toward(current: float, target: float, max_delta: float) -> float:
 
 
 # TODO: Maybe move all these variables to the init? some might change like max scale with different movement modes, but others wouldn't and could go to init
-def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict):
+def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, limit: float):
+    MAX_PERCENT = limit
+    
     #HAT:
     #    (±_, ±_)
     
@@ -53,7 +55,7 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict):
     #    "rt": +_
     
     
-    move = axes["ly"]
+    move = -axes["ly"]
     turn = axes["rx"]
     profile = axes["ry"]
     
@@ -69,11 +71,17 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict):
     targetRight /= max_mag
     
     # scale to not burn out buck
-    targetLeft *= -MAX_PERCENT
-    targetRight *= MAX_PERCENT
+    targetLeft *= MAX_PERCENT
+    targetRight *= -MAX_PERCENT  # negated cuz some are counterclockwise
     
-    out["LEFT"] = ramp_toward(out["LEFT"], targetLeft, RAMP_SPEED)  # ... it gets ramped here to make sure it doesnt' crash
-    out["RIGHT"] = ramp_toward(out["RIGHT"], targetRight, RAMP_SPEED)
+    if abs(targetLeft) > abs(out["LEFT"]) and abs(targetLeft) > MAX_PERCENT*0.8:  # only ramp if it's greater
+        out["LEFT"] = ramp_toward(out["LEFT"], targetLeft, RAMP_SPEED)  # ... it gets ramped here to make sure it doesnt' crash
+    else:
+        out["LEFT"] = targetLeft
+    if abs(targetRight) > abs(out["RIGHT"]) and abs(targetRight) > MAX_PERCENT*0.8:
+        out["RIGHT"] = ramp_toward(out["RIGHT"], targetRight, RAMP_SPEED)
+    else:
+        out["RIGHT"] = targetRight
     
     
     ###### UP/DOWN ######
@@ -84,24 +92,30 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict):
     targetNW = -profile*MAX_PERCENT
     targetNE = profile*MAX_PERCENT
     
-    out["SW"] = ramp_toward(out["SW"], targetSW, RAMP_SPEED)
-    out["SE"] = ramp_toward(out["SE"], targetSE, RAMP_SPEED)
-    out["NW"] = ramp_toward(out["NW"], targetNW, RAMP_SPEED)
-    out["NE"] = ramp_toward(out["NE"], targetNE, RAMP_SPEED)
+    
 
    #TODO: add strafing
    #TODO: I added small bumps to the sides, as I don't have an IMU for strafing stabilization and shit
 
     # Bumps a little bit more to the motors sides when the hat is pressed
-    if hat[0] == -1 or hat[1] == -1:
-        out["SW"] = min(out["SW"]+BUMP_SPEED, MAX_PERCENT)
-    if hat[0] == 1 or hat[1] == -1:
-        out["SE"] = min(out["SE"]+BUMP_SPEED, MAX_PERCENT)
-    if hat[0] == -1 or hat[1] == 1:
-        out["NW"] = min(out["NW"]+BUMP_SPEED, MAX_PERCENT)
     if hat[0] == 1 or hat[1] == 1:
-        out["NE"] = min(out["NE"]+BUMP_SPEED, MAX_PERCENT)
-            
+        targetSW = min(out["SW"]+BUMP_SPEED, MAX_PERCENT)
+        targetNE = max(out["NE"]-BUMP_SPEED, -MAX_PERCENT)
+    if hat[0] == -1 or hat[1] == 1:
+        targetSE = max(out["SE"]-BUMP_SPEED, -MAX_PERCENT)
+        targetNW = min(out["NW"]+BUMP_SPEED, MAX_PERCENT)
+    if hat[0] == 1 or hat[1] == -1:
+        targetNW = max(out["NW"]-BUMP_SPEED, -MAX_PERCENT)
+        targetSE = min(out["SE"]+BUMP_SPEED, MAX_PERCENT)
+    if hat[0] == -1 or hat[1] == -1:
+        targetNE = min(out["NE"]+BUMP_SPEED, MAX_PERCENT)
+        targetSW = max(out["SW"]-BUMP_SPEED, -MAX_PERCENT)
+    
+
+    out["SW"] = ramp_toward(out["SW"], targetSW, RAMP_SPEED)
+    out["SE"] = ramp_toward(out["SE"], targetSE, RAMP_SPEED)
+    out["NW"] = ramp_toward(out["NW"], targetNW, RAMP_SPEED)
+    out["NE"] = ramp_toward(out["NE"], targetNE, RAMP_SPEED)
 
     ###### CAMERA SERVO ######
     # servo works at absolute positioning, pwm input = the amount here or there it's set to
