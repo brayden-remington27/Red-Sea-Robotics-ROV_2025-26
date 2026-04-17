@@ -76,10 +76,14 @@ def inToOutPercent(hat: tuple, buttons: list, axes: dict, triggers: dict, limit:
     
     if abs(targetLeft) > abs(out["LEFT"]) and abs(targetLeft) > MAX_PERCENT*0.8:  # only ramp if it's greater
         out["LEFT"] = ramp_toward(out["LEFT"], targetLeft, RAMP_SPEED)  # ... it gets ramped here to make sure it doesnt' crash
+        out["SW"] =  ramp_toward(out["SW"], targetRight*0.4, RAMP_SPEED)
+        out["NW"] =  -ramp_toward(out["NW"], targetRight*0.4, RAMP_SPEED)
     else:
         out["LEFT"] = targetLeft
     if abs(targetRight) > abs(out["RIGHT"]) and abs(targetRight) > MAX_PERCENT*0.8:
         out["RIGHT"] = ramp_toward(out["RIGHT"], targetRight, RAMP_SPEED)
+        out["SE"] =  ramp_toward(out["SE"], targetRight*0.4, RAMP_SPEED)
+        out["NE"] =  -ramp_toward(out["NE"], targetRight*0.4, RAMP_SPEED)
     else:
         out["RIGHT"] = targetRight
     

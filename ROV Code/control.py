@@ -7,7 +7,7 @@ import draw
 import inputs
 import outputs
 import camera
-import sterioscope
+import photogram
 import sensors
 import utils
 
@@ -40,6 +40,10 @@ def init(config):
     PI_IP = config.get("NETWORKING", "PI_IP", fallback='raspberrypi.local')
 
     LEAK = config.getint("GENERAL", "LEAK", fallback=5)
+
+
+    global MAX_PERCENT
+    MAX_PERCENT = config.getfloat("CONFIG", "MAX_PERCENT", fallback=0.8)
 
     ########################################################################################
     pi = pigpio.pi(PI_IP)
@@ -79,7 +83,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"])
+        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT)
         
         
         displayData = {
@@ -123,4 +127,4 @@ def loop():
     
     draw.quit()
     camera.quit()
-    outputs.quit()
+    outputs.quit()  # goes last cuz it has the pi.stop()

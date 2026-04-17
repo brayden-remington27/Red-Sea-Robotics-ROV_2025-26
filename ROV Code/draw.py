@@ -131,7 +131,7 @@ class TextPrint(object):                                                       #
         self.size = size                                                       #
         self.tsize = tsize                                                     #
         self.reset()                                                           #
-        self.font = pygame.font.Font("ROV Code/textures/Space Mono/SpaceMono-Bold.ttf", self.size)
+        self.font = pygame.font.Font("ROV Code/resources/Space Mono/SpaceMono-Bold.ttf", self.size)
         self.tfont = pygame.font.Font(None, self.tsize)                        #
                                                                                #
     def tprint(self, screen, textString, color="white"):                       #
