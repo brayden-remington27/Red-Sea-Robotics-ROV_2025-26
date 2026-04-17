@@ -9,6 +9,7 @@ import outputs
 import camera
 import photogram
 import sensors
+import IO
 import utils
 
 ins = {}  # a dictionary containing all of the activations from the inputs
@@ -54,7 +55,7 @@ def init(config):
 
     # usbcam/cam, usbcam is main camera, cam is down/backup camera
     camera.addCamera("main", f"rtsp://{PI_IP}:8554/maincam", (1280, 720))  # this is for a rtsp data transfer, change port and stuff if needed
-    #camera.addCamera("backup", f"rtsp://{PI_IP}:8554/cam", (1280, 720))
+    camera.addCamera("backup", f"rtsp://{PI_IP}:8554/cam", (1280, 720))
     # TODO: implement more cameras for the arm/main/backup cameras
     
     draw.init(WIDTH, HEIGHT, BACKGROUND_COLOR, resize=False)  # Create the info window
@@ -64,7 +65,7 @@ def init(config):
     inputs.init(MIN_ACTIVATION, True)
     sensors.init(LEAK, pi)
 
-    utils.init(config)  # TODO: rename this script, its no longer a utils its more of a io bridge or smth
+    IO.init(config)  # TODO: rename this script, its no longer a utils its more of a io bridge or smth
 
 
 
@@ -83,7 +84,7 @@ def loop():
         
         all_inputs = inputs.getInputs()
         ins = all_inputs[2]  # 2: controller inputs
-        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"], MAX_PERCENT)
+        activations = utils.inToOutPercent(ins["hat"], ins["buttons"], ins["thumbsticks"], ins["triggers"], sensors.data)
         
         
         displayData = {
@@ -111,7 +112,7 @@ def loop():
         ###### DRAW ######
         
         # FYI: only call getSurface() once per loop to avoid consuming 2 frames in one loop
-        camera_surface = pygame.transform.rotate(camera.getSurface("main", (918, 648)), -90)  # if not ins["buttons"][6] else "backup"  #TODO: No longer toggle, add toggle for this case
+        camera_surface = camera.getSurface("main" if not ins["buttons"][6] else "backup", (918, 648)) # pygame.transform.rotate( , -90)  # if not ins["buttons"][6] else "backup"  #TODO: No longer toggle, add toggle for this case
         draw.update(displayData, camera_surface)
         # print camera status once; details are in draw
         #print(f"camera_surface={camera_surface}")

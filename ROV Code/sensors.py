@@ -43,6 +43,7 @@ dt = 0.01
 
 running = False
 lock = threading.Lock()
+i2c_lock = threading.Lock()
 
 threads = {}
 
@@ -92,6 +93,8 @@ def init(_leak_pin, raspi: pigpio.pi):
     threads["imu"] = threading.Thread(target=_imu_loop, daemon=True)
     threads["temp"] = threading.Thread(target=_temp_loop, daemon=True)
     threads["leak"] = threading.Thread(target=_leak_loop, daemon=True)
+    
+    time.sleep(0.2)
 
     threads["imu"].start()
     threads["temp"].start()
@@ -120,7 +123,8 @@ def quit():
 # =========================================================
 
 def read_gyro():
-    count, d = pi.i2c_read_i2c_block_data(imu_handle, GYRO_XOUT_H, 6)
+    with i2c_lock:
+        count, d = pi.i2c_read_i2c_block_data(imu_handle, GYRO_XOUT_H, 6)
     if count == 6:
         gx, gy, gz = struct.unpack('>hhh', d)
         return (
@@ -132,7 +136,8 @@ def read_gyro():
 
 
 def read_accel():
-    count, d = pi.i2c_read_i2c_block_data(imu_handle, ACCEL_XOUT_H, 6)
+    with i2c_lock:
+        count, d = pi.i2c_read_i2c_block_data(imu_handle, ACCEL_XOUT_H, 6)
     if count == 6:
         ax, ay, az = struct.unpack('>hhh', d)
         return ax / ACCEL_SCALE, ay / ACCEL_SCALE, az / ACCEL_SCALE
@@ -189,10 +194,12 @@ def _imu_loop():
 # =========================================================
 
 def _tsys01_read_raw():
-    pi.i2c_write_byte(temp_handle, TSYS01_START)
+    with i2c_lock:
+        pi.i2c_write_byte(temp_handle, TSYS01_START)
     time.sleep(0.01)
 
-    count, d = pi.i2c_read_i2c_block_data(temp_handle, TSYS01_READ, 3)
+    with i2c_lock:
+        count, d = pi.i2c_read_i2c_block_data(temp_handle, TSYS01_READ, 3)
     if count == 3:
         return d[0] << 16 | d[1] << 8 | d[2]
     return None
@@ -218,7 +225,8 @@ def _temp_loop():
 
 def _leak_loop():
     while running:
-        state = pi.read(leak_pin)
+        with i2c_lock:
+            state = pi.read(leak_pin)
 
         with lock:
             flags["leak"] = bool(state)

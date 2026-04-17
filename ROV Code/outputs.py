@@ -2,6 +2,7 @@ import pigpio
 import sensors
 import time
 import configparser  # not sure if needed
+import IO
 
 
 def percentToPWM(p, clamp: float):  # turns the percent value to a 1100–1900 clamped
@@ -72,6 +73,7 @@ def sendActivations(percents: dict):
     if pi is None:
         return  # make sure, if there isn't a pi don't try to send
 
+    displayPercents = {}
     for name, percent in percents.items():
         key = name if name in PINS else name.upper()  # the key that will be sought by the declaration of the pin is the name given by the dict of percents, uppercase if not there naturally
         if key not in PINS:
@@ -80,7 +82,9 @@ def sendActivations(percents: dict):
         pin = PINS[key]
         pwm = percentToPWM(percent, 1)
         if name[0] == 'L' or name[0] == 'R' or name[0] == 'N' or name[0] == 'S':
+            percent *= MAX_PERCENT
             pwm = percentToPWM(percent, MAX_PERCENT)  # final clamping to ensure nothing is beyond 80%
+            displayPercents[name] = percent
         pi.set_servo_pulsewidth(pin, pwm)
 
 

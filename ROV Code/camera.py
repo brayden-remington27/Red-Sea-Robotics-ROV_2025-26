@@ -93,7 +93,7 @@ def _cameraReader(name):
         cam["latest"] = raw  # update the frame with the new data
         sensors.setCameraConnection(True)  # flag that a camera is sending data
     
-    print(f"Quitting Camera{name}\'s thread")
+    print(f"Quitting Camera {name}\'s thread")
 
 
 def getSurface(name, scaledDimensions: tuple = None):

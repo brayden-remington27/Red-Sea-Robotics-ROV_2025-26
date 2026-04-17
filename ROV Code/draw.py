@@ -51,10 +51,12 @@ def update(data: dict, cameraDisplay):
     
     printer.tprint(window, "DATA:")  # temp/pressure/depth. mostlly gotten from control.py's displayData
     printer.indent()
-    printer.print(window, f"Temp (in): {data["data"]["intTemp"]}")
-    printer.print(window, f"Temp (ex): {data["data"]["extTemp"]}")
-    printer.print(window, f"Pressure: {data["data"]["pressure"]}")
-    printer.print(window, f"Depth: {data["data"]["depth"]}")
+    printer.print(window, f"Temp (ex): {data["data"]["temp"]}")
+    printer.print(window, f"Orient: ")
+    printer.indent()
+    printer.print(window, f"Pitch: {data["data"]["gyro"][0]: .2f}")
+    printer.print(window, f"Roll: {data["data"]["gyro"][1]: .2f}")
+    printer.outdent()
     printer.outdent()
     printer.print(window, "")
     printer.print(window, "")
@@ -88,6 +90,11 @@ def update(data: dict, cameraDisplay):
     # Bring camera1Display from the camera.py to control.py update, and fed to draw.py as cameraDisplay
     if cameraDisplay:  # this is checking that the frame is full from the stream and can print nicely. if it wasn't, it will return none and won't blit
         window.blit(cameraDisplay, (700, 65))
+    
+
+    printer.reset()
+    printer.x = 1200
+    printer.tprint(window, "test")
     
     pygame.display.flip()
 
